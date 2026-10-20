@@ -1,0 +1,10 @@
+<routes>
+    <route id="west_east" edges="left0A0 A0right0"/>
+    <route id="east_west" edges="right0A0 A0left0"/>
+    <route id="north_south" edges="top0A0 A0bottom0"/>
+    <route id="south_north" edges="bottom0A0 A0top0"/>
+    <flow id="f_we" route="west_east" begin="0" end="3600" vehsPerHour="500"/>
+    <flow id="f_ew" route="east_west" begin="0" end="3600" vehsPerHour="500"/>
+    <flow id="f_ns" route="north_south" begin="0" end="3600" vehsPerHour="200"/>
+    <flow id="f_sn" route="south_north" begin="0" end="3600" vehsPerHour="200"/>
+</routes>

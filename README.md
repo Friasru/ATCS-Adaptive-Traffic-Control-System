@@ -8,10 +8,10 @@ Uneven traffic scenario, one simulated hour, 1400 vehicles.
 
 | Metric | Fixed timer | Adaptive |
 |---|---|---|
-| Avg wait (s) | 13.31 | 4.02 |
+| Avg wait (s) | 13.39 | 4.02 |
 | Max wait (s) | 46.00 | 16.00 |
-| Avg time loss (s) | 23.28 | 13.07 |
-| Avg trip duration (s) | 52.38 | 42.16 |
+| Avg time loss (s) | 23.35 | 13.07 |
+| Avg trip duration (s) | 52.45 | 42.16 |
 
 ## Structure
 
@@ -30,6 +30,6 @@ Uneven traffic scenario, one simulated hour, 1400 vehicles.
 Requires SUMO 1.18 or newer and the Python traci library.
 
     cd simulation
-    sumo -c baseline.sumocfg
-    python3 adaptive_controller.py
-    python3 metrics.py tripinfo_adaptive.xml
+    python3 runner.py fixed
+    python3 runner.py queue_based
+    python3 metrics.py output/tripinfo_queue_based.xml

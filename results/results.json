@@ -1,0 +1,22 @@
+{
+  "scenarios": [
+    {
+      "name": "uneven",
+      "description": "East-west heavy (500 veh/h each), north-south light (200 veh/h each)",
+      "fixed": {
+        "vehicles_completed": 1395,
+        "avg_wait_s": 13.31,
+        "max_wait_s": 46.0,
+        "avg_time_loss_s": 23.28,
+        "avg_trip_duration_s": 52.38
+      },
+      "adaptive": {
+        "vehicles_completed": 1400,
+        "avg_wait_s": 4.02,
+        "max_wait_s": 16.0,
+        "avg_time_loss_s": 13.07,
+        "avg_trip_duration_s": 42.16
+      }
+    }
+  ]
+}

@@ -2,16 +2,18 @@
 
 Holberton capstone project. An adaptive traffic light controller tested in the SUMO simulator and compared against a fixed-timer baseline.
 
-## Results so far
+## Results
 
-Uneven traffic scenario, one simulated hour, 1400 vehicles.
+Fixed timer vs. queue-based adaptive controller (minimum green 20 s, switch margin 2 cars). One simulated hour per scenario, times in seconds. The held-out scenario was not used when tuning.
 
-| Metric | Fixed timer | Adaptive |
-|---|---|---|
-| Avg wait (s) | 13.39 | 4.02 |
-| Max wait (s) | 46.00 | 16.00 |
-| Avg time loss (s) | 23.35 | 13.07 |
-| Avg trip duration (s) | 52.45 | 42.16 |
+| Scenario (EW / NS veh/h) | Avg wait fixed | Avg wait adaptive | Time loss fixed | Time loss adaptive | Max wait fixed | Max wait adaptive |
+|---|---|---|---|---|---|---|
+| uneven (500 / 200) | 13.39 | 6.07 | 23.35 | 15.11 | 46 | 25 |
+| rush_hour (900 / 700) | 18.06 | 18.26 | 32.77 | 36.93 | 59 | 52 |
+| balanced (300 / 300) | 13.37 | 6.21 | 22.42 | 14.78 | 46 | 21 |
+| held_out (200 / 600) | 14.80 | 6.01 | 25.66 | 15.59 | 46 | 25 |
+
+The adaptive controller wins in uneven, balanced and held-out traffic. In saturated rush-hour traffic the fixed timer has slightly lower average wait and time loss (the adaptive controller has the lower worst-case wait), because both roads are busy and there is little room to improve. The parameter sweep is in results/queue_based_tuning.txt.
 
 ## Structure
 

@@ -1,0 +1,170 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  background: #f3f5f7;
+  color: #1f2933;
+}
+
+header {
+  background: #123b5e;
+  color: #fff;
+  padding: 1.25rem 1.5rem;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 1.6rem;
+}
+
+header p {
+  margin: 0.25rem 0 0;
+  opacity: 0.85;
+}
+
+main {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  display: grid;
+  gap: 1.25rem;
+}
+
+.card {
+  background: #fff;
+  border-radius: 8px;
+  padding: 1.25rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+.card h2 {
+  margin-top: 0;
+  font-size: 1.2rem;
+}
+
+form {
+  display: grid;
+  gap: 0.9rem;
+}
+
+label {
+  display: grid;
+  gap: 0.3rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+input,
+select {
+  padding: 0.55rem 0.65rem;
+  border: 1px solid #b8c2cc;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-family: inherit;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.9rem;
+}
+
+fieldset {
+  border: 1px solid #b8c2cc;
+  border-radius: 6px;
+  padding: 0.6rem 0.9rem;
+}
+
+legend {
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 0 0.3rem;
+}
+
+fieldset label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 400;
+  font-size: 1rem;
+  padding: 0.2rem 0;
+}
+
+button {
+  justify-self: start;
+  padding: 0.6rem 1.1rem;
+  border: none;
+  border-radius: 6px;
+  background: #1c7ed6;
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #1971c2;
+}
+
+button:disabled {
+  background: #9aa5b1;
+  cursor: wait;
+}
+
+.errors {
+  color: #c92a2a;
+  margin: 0.75rem 0 0;
+  padding-left: 1.2rem;
+}
+
+.errors:empty {
+  display: none;
+}
+
+#run-status {
+  min-height: 1.4rem;
+  margin: 0.75rem 0 0;
+}
+
+#run-status.error {
+  color: #c92a2a;
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+}
+
+th,
+td {
+  text-align: left;
+  padding: 0.5rem 0.6rem;
+  border-bottom: 1px solid #e4e7eb;
+  white-space: nowrap;
+}
+
+th {
+  background: #f3f5f7;
+}
+
+tr.best td {
+  background: #ebfbee;
+  font-weight: 600;
+}
+
+td.failed {
+  color: #c92a2a;
+}
+
+@media (max-width: 600px) {
+  .row {
+    grid-template-columns: 1fr;
+  }
+}

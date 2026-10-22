@@ -1,7 +1,8 @@
 import traci
 
-MIN_GREEN = 10
+MIN_GREEN = 20
 MAX_GREEN = 60
+SWITCH_MARGIN = 2
 HOLD = 1000
 
 
@@ -32,5 +33,5 @@ class QueueBasedController:
             other = self.green_phases[(self.green_phases.index(phase) + 1) % len(self.green_phases)]
             current_q = self.queue(self.green[phase])
             other_q = self.queue(self.green[other])
-            if other_q > current_q or (now - self.phase_start >= MAX_GREEN and other_q > 0):
+            if other_q >= current_q + SWITCH_MARGIN or (now - self.phase_start >= MAX_GREEN and other_q > 0):
                 traci.trafficlight.setPhase(self.tls_id, phase + 1)

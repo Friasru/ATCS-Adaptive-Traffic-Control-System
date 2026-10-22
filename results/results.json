@@ -1,8 +1,11 @@
 {
+  "adaptive_controller": "queue_based",
   "scenarios": [
     {
       "name": "uneven",
-      "description": "East-west heavy (500 veh/h each), north-south light (200 veh/h each)",
+      "description": "East-west heavy, north-south light",
+      "ew_vehs_per_hour": 500,
+      "ns_vehs_per_hour": 200,
       "fixed": {
         "vehicles_completed": 1400,
         "avg_wait_s": 13.39,
@@ -12,10 +15,70 @@
       },
       "adaptive": {
         "vehicles_completed": 1400,
-        "avg_wait_s": 4.02,
-        "max_wait_s": 16.0,
-        "avg_time_loss_s": 13.07,
-        "avg_trip_duration_s": 42.16
+        "avg_wait_s": 6.07,
+        "max_wait_s": 25.0,
+        "avg_time_loss_s": 15.11,
+        "avg_trip_duration_s": 44.22
+      }
+    },
+    {
+      "name": "rush_hour",
+      "description": "Heavy traffic in both directions",
+      "ew_vehs_per_hour": 900,
+      "ns_vehs_per_hour": 700,
+      "fixed": {
+        "vehicles_completed": 3200,
+        "avg_wait_s": 18.06,
+        "max_wait_s": 59.0,
+        "avg_time_loss_s": 32.77,
+        "avg_trip_duration_s": 61.88
+      },
+      "adaptive": {
+        "vehicles_completed": 3200,
+        "avg_wait_s": 18.26,
+        "max_wait_s": 52.0,
+        "avg_time_loss_s": 36.93,
+        "avg_trip_duration_s": 66.04
+      }
+    },
+    {
+      "name": "balanced",
+      "description": "Equal light traffic in both directions",
+      "ew_vehs_per_hour": 300,
+      "ns_vehs_per_hour": 300,
+      "fixed": {
+        "vehicles_completed": 1200,
+        "avg_wait_s": 13.37,
+        "max_wait_s": 46.0,
+        "avg_time_loss_s": 22.42,
+        "avg_trip_duration_s": 51.47
+      },
+      "adaptive": {
+        "vehicles_completed": 1200,
+        "avg_wait_s": 6.21,
+        "max_wait_s": 21.0,
+        "avg_time_loss_s": 14.78,
+        "avg_trip_duration_s": 43.84
+      }
+    },
+    {
+      "name": "held_out",
+      "description": "North-south heavy, not used for tuning",
+      "ew_vehs_per_hour": 200,
+      "ns_vehs_per_hour": 600,
+      "fixed": {
+        "vehicles_completed": 1600,
+        "avg_wait_s": 14.8,
+        "max_wait_s": 46.0,
+        "avg_time_loss_s": 25.66,
+        "avg_trip_duration_s": 54.73
+      },
+      "adaptive": {
+        "vehicles_completed": 1600,
+        "avg_wait_s": 6.01,
+        "max_wait_s": 25.0,
+        "avg_time_loss_s": 15.59,
+        "avg_trip_duration_s": 44.65
       }
     }
   ]

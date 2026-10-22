@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ATCS - Scenarios</title>
+  <link rel="stylesheet" href="css/scenarios.css">
+</head>
+<body>
+  <header>
+    <h1>ATCS</h1>
+    <p>Adaptive Traffic Control System</p>
+  </header>
+  <main>
+    <section class="card">
+      <h2>Create a scenario</h2>
+      <form id="scenario-form">
+        <label>Name
+          <input type="text" id="name" maxlength="64" required>
+        </label>
+        <label>Description (optional)
+          <input type="text" id="description" maxlength="255">
+        </label>
+        <div class="row">
+          <label>East-west vehicles per hour
+            <input type="number" id="ew" min="0" max="1500" value="500" required>
+          </label>
+          <label>North-south vehicles per hour
+            <input type="number" id="ns" min="0" max="1500" value="200" required>
+          </label>
+        </div>
+        <button type="submit">Create scenario</button>
+      </form>
+      <ul id="scenario-errors" class="errors"></ul>
+    </section>
+
+    <section class="card">
+      <h2>Run a simulation</h2>
+      <form id="run-form">
+        <label>Scenario
+          <select id="scenario-select"></select>
+        </label>
+        <fieldset>
+          <legend>Controllers</legend>
+          <div id="controller-list"></div>
+        </fieldset>
+        <button type="submit" id="run-button">Run selected controllers</button>
+      </form>
+      <p id="run-status" role="status"></p>
+    </section>
+
+    <section class="card">
+      <h2>Results</h2>
+      <p id="empty-message">No runs for this scenario yet.</p>
+      <div class="table-wrap">
+        <table id="results-table">
+          <thead>
+            <tr>
+              <th>Run</th>
+              <th>Controller</th>
+              <th>Status</th>
+              <th>Avg wait (s)</th>
+              <th>Max wait (s)</th>
+              <th>Time loss (s)</th>
+              <th>Trip duration (s)</th>
+              <th>Vehicles</th>
+            </tr>
+          </thead>
+          <tbody id="results-body"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+  <script src="js/scenarios.js"></script>
+</body>
+</html>

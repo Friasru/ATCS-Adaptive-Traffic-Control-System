@@ -1,0 +1,22 @@
+mean_loss    uneven      rush  balanced  max_wait  config
+    22.16     14.82     36.49     15.16      63.0  min_green=20 margin=3
+    22.27     15.11     36.93     14.78      52.0  min_green=20 margin=2
+    22.77     16.81     35.69     15.81      64.0  min_green=20 margin=5
+    22.80     15.35     39.94     13.10      55.0  min_green=20 margin=0
+    22.80     16.65     35.93     15.83      52.0  min_green=25 margin=2
+    22.84     16.52     36.15     15.85      63.0  min_green=25 margin=3
+    22.88     12.74     42.79     13.11      65.0  min_green=15 margin=3
+    22.89     13.54     42.19     12.93      45.0  min_green=15 margin=2
+    23.48     13.58     43.97     12.88      44.0  min_green=15 margin=0
+    23.56     19.35     34.84     16.47      55.0  min_green=30 margin=5
+    23.58     18.24     34.84     17.67      62.0  min_green=30 margin=3
+    23.63     18.54     34.84     17.51      55.0  min_green=30 margin=2
+    23.67     16.77     38.41     15.83      53.0  min_green=25 margin=0
+    23.92     19.52     35.96     16.28      57.0  min_green=25 margin=5
+    24.13     18.35     36.52     17.51      55.0  min_green=30 margin=0
+    25.19     14.71     45.05     15.81      66.0  min_green=15 margin=5
+    26.18     23.35     32.77     22.42      59.0  fixed
+    32.19     14.48     66.29     15.81     107.0  min_green=10 margin=5
+    34.72     13.32     77.91     12.94      63.0  min_green=10 margin=3
+    35.35     12.79     80.59     12.67      60.0  min_green=10 margin=2
+    36.53     13.53     83.86     12.21      50.0  min_green=10 margin=0

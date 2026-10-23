@@ -38,7 +38,11 @@ const els = {
   timeseriesNote: document.getElementById("timeseries-note"),
 };
 
-// The token lives in memory only: a reload signs the user out.
+// The token lives in memory and is mirrored to sessionStorage (this tab only), so
+// a reload keeps the user signed in. If storage is unavailable, memory still works.
+const SESSION_KEY = "atcs.session";
+// setTimeout fires at once for longer delays, so longer lifetimes are capped.
+const MAX_TIMER_MS = 2147483647;
 const session = { token: null, username: null, expiryTimer: null };
 const charts = {};
 let controllers = [];
@@ -96,6 +100,51 @@ function fmt(value, digits = 2) {
 
 // ---------- session ----------
 
+function saveStoredSession(token, username) {
+  try {
+    sessionStorage.setItem(SESSION_KEY, JSON.stringify({ token, username }));
+  } catch (err) {
+    // Storage blocked or full: the session stays in memory only.
+  }
+}
+
+function clearStoredSession() {
+  try {
+    sessionStorage.removeItem(SESSION_KEY);
+  } catch (err) {
+    // Nothing stored that we can reach.
+  }
+}
+
+function readStoredSession() {
+  try {
+    const stored = JSON.parse(sessionStorage.getItem(SESSION_KEY));
+    if (stored && typeof stored.token === "string" && stored.token &&
+        typeof stored.username === "string" && stored.username) {
+      return { token: stored.token, username: stored.username };
+    }
+  } catch (err) {
+    // Storage unavailable or corrupt JSON.
+  }
+  return null;
+}
+
+// Milliseconds until the JWT's exp claim, or null if the token cannot be read.
+// The signature is not checked here; the server answers a bad token with 401.
+function tokenLifetime(token) {
+  if (typeof token !== "string") return null;
+  const parts = token.split(".");
+  if (parts.length !== 3) return null;
+  try {
+    const b64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+    const payload = JSON.parse(atob(b64.padEnd(Math.ceil(b64.length / 4) * 4, "=")));
+    if (!payload || typeof payload.exp !== "number" || !Number.isFinite(payload.exp)) return null;
+    return payload.exp * 1000 - Date.now();
+  } catch (err) {
+    return null;
+  }
+}
+
 function showLogin(message) {
   els.dashboard.hidden = true;
   els.session.hidden = true;
@@ -108,6 +157,7 @@ function signOut(message) {
   clearTimeout(session.expiryTimer);
   session.token = null;
   session.username = null;
+  clearStoredSession();
   compareSeq++;
   showLogin(message);
 }
@@ -125,11 +175,12 @@ async function guard(task) {
   }
 }
 
-function startSession(username, data) {
-  session.token = data.access_token;
+function startSession(username, token, lifetimeMs) {
+  session.token = token;
   session.username = username;
+  saveStoredSession(token, username);
   clearTimeout(session.expiryTimer);
-  if (data.expires_in > 0) session.expiryTimer = setTimeout(expired, data.expires_in * 1000);
+  if (lifetimeMs > 0) session.expiryTimer = setTimeout(expired, Math.min(lifetimeMs, MAX_TIMER_MS));
   els.password.value = "";
   setMessage(els.loginMessage, "");
   els.loginPanel.hidden = true;
@@ -139,13 +190,31 @@ function startSession(username, data) {
   guard(loadDashboard);
 }
 
+function restoreSession() {
+  const stored = readStoredSession();
+  const lifetime = stored ? tokenLifetime(stored.token) : null;
+  if (lifetime === null) {
+    clearStoredSession();
+    showLogin();
+  } else if (lifetime <= 0) {
+    expired();
+  } else {
+    startSession(stored.username, stored.token, lifetime);
+  }
+}
+
 async function login(username, password) {
   const { ok, status, data } = await api("/auth/login", {
     method: "POST",
     body: { username, password },
   });
   if (ok && data && data.access_token) {
-    startSession(username, data);
+    // The session never outlives the token: use whichever of expires_in and exp ends first.
+    const fromExp = tokenLifetime(data.access_token);
+    const fromServer = data.expires_in * 1000;
+    const lifetime = fromExp === null ? fromServer : fromServer > 0 ? Math.min(fromServer, fromExp) : fromExp;
+    if (lifetime <= 0) expired();
+    else startSession(username, data.access_token, lifetime);
     return;
   }
   if (status === 401) setMessage(els.loginMessage, "Incorrect username or password.", true);
@@ -504,4 +573,4 @@ els.scenarioSelect.addEventListener("change", () => guard(loadComparison));
 els.refreshButton.addEventListener("click", () => guard(loadDashboard));
 els.exportButton.addEventListener("click", () => guard(exportCsv));
 
-showLogin();
+restoreSession();

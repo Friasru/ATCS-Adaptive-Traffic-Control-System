@@ -76,7 +76,7 @@ Stable secret (shared or deployed setups, or to stay signed in across restarts).
 
 A missing, short or previously published secret stops startup with an error that says what to do. `ATCS_DEV=1` never overrides a weak `JWT_SECRET_KEY`; never set `ATCS_DEV=1` outside local development.
 
-Then open http://127.0.0.1:5000/scenarios.html to create scenarios and run controllers, and http://127.0.0.1:5000/dashboard.html to compare them. The dashboard needs an account: use "Create account" on its sign-in form, or `POST /api/auth/register`. Tokens expire after one hour. The dashboard keeps its token in memory only, so reloading the page signs you out.
+Then open http://127.0.0.1:5000/scenarios.html to create scenarios and run controllers, and http://127.0.0.1:5000/dashboard.html to compare them. The dashboard needs an account: use "Create account" on its sign-in form, or `POST /api/auth/register`. Tokens expire after one hour. The dashboard stores its authentication token in sessionStorage for the current browser tab, preserving the session across page reloads and navigation. The session is cleared when the user signs out, the token expires, or the tab's session ends.
 
 The SQLite database is `backend/atcs.db`; tables are created on startup, existing data is kept.
 

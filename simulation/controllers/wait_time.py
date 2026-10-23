@@ -1,7 +1,7 @@
 import traci
 
-MIN_GREEN = 10
-MAX_GREEN = 60
+MIN_GREEN = 20
+MAX_GREEN = 45
 SWITCH_MARGIN = 0
 HOLD = 1000
 

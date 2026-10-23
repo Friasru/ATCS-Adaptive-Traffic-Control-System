@@ -6,12 +6,15 @@ from flask import current_app
 
 from app import db
 
+# Returned to API clients on failure. Exception text can contain absolute
+# paths and the full command line, so details go to the server log only.
+SIMULATION_ERROR = "simulation failed"
+
 
 def execute_run(run):
     sim_dir = current_app.config["SIMULATION_DIR"]
     if sim_dir not in sys.path:
         sys.path.insert(0, sim_dir)
-    import metrics
 
     tag = f"run_{run.id}"
     tripinfo = os.path.join(sim_dir, "output", f"tripinfo_{tag}.xml")
@@ -26,6 +29,8 @@ def execute_run(run):
     run.status = "running"
     db.session.commit()
     try:
+        import metrics
+
         subprocess.run(
             cmd,
             cwd=sim_dir,
@@ -36,9 +41,12 @@ def execute_run(run):
         )
         stats = metrics.summarize(tripinfo)
     except Exception as exc:
+        current_app.logger.exception(
+            "simulation run %s failed (stderr: %s)", run.id, getattr(exc, "stderr", None)
+        )
         run.status = "failed"
         db.session.commit()
-        return str(exc)
+        return SIMULATION_ERROR
     run.vehicles_completed = int(stats["vehicles_completed"])
     run.avg_wait_s = stats["avg_wait_s"]
     run.max_wait_s = stats["max_wait_s"]

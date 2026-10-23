@@ -1,12 +1,14 @@
 import logging
+import os
 import subprocess
 import sys
+import time
 from types import SimpleNamespace
 from unittest.mock import patch
 
 import pytest
 
-from app.services.simulation import SIMULATION_ERROR
+from app.services.simulation import SIMULATION_ERROR, run_simulation
 
 SECRET_PATH = "/home/someone/secret/simulation"
 STDERR = f'Traceback (most recent call last):\n  File "{SECRET_PATH}/runner.py", line 1\nFatalTraCIError: boom'
@@ -41,7 +43,7 @@ def assert_no_internals(text, app):
 
 
 def test_successful_run_through_real_service(client):
-    with patch("app.services.simulation.subprocess.run") as run, fake_metrics(lambda path: STATS):
+    with patch("app.services.simulation.run_simulation") as run, fake_metrics(lambda path: STATS):
         response = post_run(client, "wait_time")
     data = response.get_json()
     assert response.status_code == 201
@@ -61,7 +63,7 @@ def test_failure_returns_sanitized_error(client, app, kind):
     def summarize(path):
         raise exc
 
-    with patch("app.services.simulation.subprocess.run", side_effect=subprocess_effect), fake_metrics(summarize):
+    with patch("app.services.simulation.run_simulation", side_effect=subprocess_effect), fake_metrics(summarize):
         response = post_run(client)
     data = response.get_json()
     assert response.status_code == 500
@@ -74,7 +76,7 @@ def test_failure_returns_sanitized_error(client, app, kind):
 
 def test_failure_details_are_logged(client, caplog):
     with caplog.at_level(logging.ERROR), patch(
-        "app.services.simulation.subprocess.run", side_effect=FAILURES["process_error"]
+        "app.services.simulation.run_simulation", side_effect=FAILURES["process_error"]
     ), fake_metrics(lambda path: STATS):
         run_id = post_run(client).get_json()["run"]["id"]
     records = [r for r in caplog.records if r.levelno == logging.ERROR]
@@ -88,7 +90,7 @@ def test_failure_details_are_logged(client, caplog):
 
 def test_metrics_import_failure_marks_run_failed(client, app):
     # previously raised outside the handler and left the run stuck in "running"
-    with patch("app.services.simulation.subprocess.run"), patch.dict(sys.modules, {"metrics": None}):
+    with patch("app.services.simulation.run_simulation"), patch.dict(sys.modules, {"metrics": None}):
         response = post_run(client)
     assert response.status_code == 500
     assert response.get_json()["error"] == SIMULATION_ERROR
@@ -97,7 +99,7 @@ def test_metrics_import_failure_marks_run_failed(client, app):
 
 
 def test_failed_run_readable_without_details(client, app):
-    with patch("app.services.simulation.subprocess.run", side_effect=FAILURES["process_error"]), fake_metrics(
+    with patch("app.services.simulation.run_simulation", side_effect=FAILURES["process_error"]), fake_metrics(
         lambda path: STATS
     ):
         run_id = post_run(client).get_json()["run"]["id"]
@@ -120,3 +122,47 @@ def test_validation_errors_unchanged(client):
     }
     assert client.get("/api/scenarios").status_code == 200
     assert client.get("/api/scenarios/999").status_code == 404
+
+
+# The helper itself, with real processes standing in for runner.py and sumo.
+PARENT = """
+import subprocess, sys, time
+child = subprocess.Popen([sys.executable, "-c", "import time; time.sleep(60)"])
+print(child.pid, flush=True)
+time.sleep(60)
+"""
+
+
+def test_timeout_kills_whole_process_group(tmp_path):
+    start = time.monotonic()
+    with pytest.raises(subprocess.TimeoutExpired) as info:
+        run_simulation([sys.executable, "-c", PARENT], str(tmp_path), timeout=1)
+    # the grandchild holds the output pipes, so this only returns early if it was killed
+    assert time.monotonic() - start < 10
+    grandchild = int(info.value.stdout.split()[0])
+    for _ in range(50):
+        try:
+            os.kill(grandchild, 0)
+        except ProcessLookupError:
+            break
+        # still a zombie until init reaps it; check its state
+        with open(f"/proc/{grandchild}/stat") as f:
+            if f.read().split(")")[-1].split()[0] == "Z":
+                break
+        time.sleep(0.1)
+    else:
+        os.kill(grandchild, 9)
+        pytest.fail("grandchild process survived the timeout")
+
+
+def test_nonzero_exit_raises_with_stderr(tmp_path):
+    with pytest.raises(subprocess.CalledProcessError) as info:
+        run_simulation(
+            [sys.executable, "-c", "import sys; sys.stderr.write('bad'); sys.exit(3)"], str(tmp_path), 10
+        )
+    assert info.value.returncode == 3
+    assert info.value.stderr == "bad"
+
+
+def test_success_returns_quietly(tmp_path):
+    assert run_simulation([sys.executable, "-c", "print('ok')"], str(tmp_path), 10) is None

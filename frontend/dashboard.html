@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ATCS - Dashboard</title>
+  <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">ATCS <span>Adaptive Traffic Control System</span></div>
+    <nav>
+      <a href="scenarios.html">Scenarios</a>
+      <a href="dashboard.html" aria-current="page">Dashboard</a>
+    </nav>
+    <div class="session" id="session" hidden>
+      <span id="session-user"></span>
+      <button type="button" id="logout-button" class="link">Sign out</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="panel login" id="login-panel" aria-labelledby="login-title">
+      <h1 id="login-title">Sign in</h1>
+      <p class="muted">The comparison dashboard and CSV export need an account.</p>
+      <form id="login-form" novalidate>
+        <label for="username">Username</label>
+        <input type="text" id="username" autocomplete="username" maxlength="64" required>
+        <label for="password">Password</label>
+        <input type="password" id="password" autocomplete="current-password" maxlength="72" required>
+        <div class="actions">
+          <button type="submit" id="login-button">Sign in</button>
+          <button type="button" id="register-button" class="secondary">Create account</button>
+        </div>
+      </form>
+      <p id="login-message" class="message" role="alert"></p>
+    </section>
+
+    <div id="dashboard" hidden>
+      <section class="panel toolbar" aria-label="Filters">
+        <div class="field">
+          <label for="scenario-select">Scenario</label>
+          <select id="scenario-select"></select>
+        </div>
+        <div class="field">
+          <label for="export-controller">CSV controller</label>
+          <select id="export-controller">
+            <option value="">All controllers</option>
+          </select>
+        </div>
+        <div class="toolbar-actions">
+          <button type="button" id="refresh-button" class="secondary">Refresh</button>
+          <button type="button" id="export-button">Download CSV</button>
+        </div>
+        <p id="status" class="message" role="status"></p>
+      </section>
+
+      <section class="panel" aria-labelledby="table-title">
+        <div class="panel-head">
+          <h2 id="table-title">Latest completed run per controller</h2>
+          <span id="scenario-info" class="muted"></span>
+        </div>
+        <p id="empty-message" class="muted" hidden>No completed runs for this scenario yet. Run the controllers from the Scenarios page.</p>
+        <p id="baseline-message" class="muted" hidden>No completed fixed-timer run, so improvement versus fixed cannot be calculated.</p>
+        <div class="table-wrap">
+          <table id="compare-table">
+            <thead>
+              <tr>
+                <th scope="col">Controller</th>
+                <th scope="col">Run</th>
+                <th scope="col" class="num">Vehicles</th>
+                <th scope="col" class="num">Avg wait (s)</th>
+                <th scope="col" class="num">Max wait (s)</th>
+                <th scope="col" class="num">Avg time loss (s)</th>
+                <th scope="col" class="num">Avg trip (s)</th>
+              </tr>
+            </thead>
+            <tbody id="compare-body"></tbody>
+          </table>
+        </div>
+        <p class="muted small">Percentages are change versus the fixed timer; lower times are better.</p>
+      </section>
+
+      <section class="panel" aria-labelledby="charts-title">
+        <div class="panel-head">
+          <h2 id="charts-title">Controller comparison</h2>
+          <ul class="legend" id="legend"></ul>
+        </div>
+        <div class="charts">
+          <figure>
+            <figcaption>Average waiting time</figcaption>
+            <div class="chart-box"><canvas id="chart-avg-wait" role="img" aria-label="Average waiting time by controller, in seconds"></canvas></div>
+            <p class="chart-note" data-note="avg_wait_s"></p>
+          </figure>
+          <figure>
+            <figcaption>Average time loss</figcaption>
+            <div class="chart-box"><canvas id="chart-time-loss" role="img" aria-label="Average time loss by controller, in seconds"></canvas></div>
+            <p class="chart-note" data-note="avg_time_loss_s"></p>
+          </figure>
+          <figure>
+            <figcaption>Maximum waiting time</figcaption>
+            <div class="chart-box"><canvas id="chart-max-wait" role="img" aria-label="Maximum waiting time by controller, in seconds"></canvas></div>
+            <p class="chart-note" data-note="max_wait_s"></p>
+          </figure>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="ts-title">
+        <div class="panel-head">
+          <h2 id="ts-title">Stopped vehicles over time</h2>
+        </div>
+        <div class="chart-box wide"><canvas id="chart-timeseries" role="img" aria-label="Halting vehicles over simulation time, per controller"></canvas></div>
+        <p class="chart-note" id="timeseries-note"></p>
+      </section>
+    </div>
+  </main>
+
+  <script src="js/vendor/chart.umd.min.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>

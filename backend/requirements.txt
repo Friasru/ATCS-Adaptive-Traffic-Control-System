@@ -1,2 +1,4 @@
 Flask
 Flask-SQLAlchemy
+Flask-JWT-Extended>=4.6
+Flask-Bcrypt>=1.0

@@ -1,0 +1,69 @@
+Wait-time controller tuning sweep
+Training scenarios (EW / NS veh/h): uneven (500 / 200), rush (900 / 700), balanced (300 / 300)
+Objective: mean avg time loss over training scenarios (s).
+Constraint: max wait in every training scenario <= fixed timer's (status=max_wait means rejected).
+Ties: equal mean loss goes to the smaller (min_green, margin, max_green).
+
+mean_loss    uneven      rush  balanced    mw_uneven      mw_rush  mw_balanced  status    config
+    22.34     15.35     38.56     13.10         25.0         56.0         24.0  ok        min_green=20 margin=0 max_green=45
+    22.34     15.35     38.56     13.10         25.0         56.0         24.0  ok        min_green=20 margin=0 max_green=60
+    22.45     14.40     38.50     14.46         25.0         54.0         21.0  ok        min_green=20 margin=25 max_green=45
+    22.45     14.40     38.50     14.46         25.0         54.0         21.0  ok        min_green=20 margin=25 max_green=60
+    22.65     13.02     41.63     13.31         26.0         52.0         20.0  ok        min_green=15 margin=25 max_green=45
+    22.65     13.02     41.63     13.31         26.0         52.0         20.0  ok        min_green=15 margin=25 max_green=60
+    22.76     13.87     41.61     12.81         20.0         50.0         20.0  ok        min_green=15 margin=0 max_green=45
+    22.76     13.87     41.61     12.81         20.0         50.0         20.0  ok        min_green=15 margin=0 max_green=60
+    22.91     16.77     36.13     15.83         30.0         53.0         29.0  ok        min_green=25 margin=0 max_green=45
+    22.91     16.77     36.13     15.83         30.0         53.0         29.0  ok        min_green=25 margin=0 max_green=60
+    23.04     16.92     35.82     16.39         33.0         52.0         31.0  ok        min_green=25 margin=50 max_green=45
+    23.04     16.92     35.82     16.39         33.0         52.0         31.0  ok        min_green=25 margin=50 max_green=60
+    23.13     21.85     23.46     24.07         62.0         43.0         62.0  max_wait  min_green=25 margin=200 max_green=60
+    23.14     22.02     23.87     23.52         48.0         45.0         48.0  max_wait  min_green=25 margin=200 max_green=45
+    23.15     16.30     37.13     16.02         32.0         54.0         31.0  ok        min_green=20 margin=50 max_green=45
+    23.15     16.30     37.13     16.02         32.0         54.0         31.0  ok        min_green=20 margin=50 max_green=60
+    23.21     16.69     36.93     16.01         29.0         53.0         30.0  ok        min_green=25 margin=25 max_green=45
+    23.21     16.69     36.93     16.01         29.0         53.0         30.0  ok        min_green=25 margin=25 max_green=60
+    23.28     22.02     24.31     23.52         48.0         43.0         48.0  max_wait  min_green=10 margin=200 max_green=45
+    23.28     22.02     24.31     23.52         48.0         43.0         48.0  max_wait  min_green=15 margin=200 max_green=45
+    23.28     18.07     34.39     17.39         36.0         60.0         35.0  max_wait  min_green=30 margin=50 max_green=45
+    23.28     18.07     34.39     17.39         36.0         60.0         35.0  max_wait  min_green=30 margin=50 max_green=60
+    23.35     22.02     24.50     23.52         48.0         43.0         48.0  max_wait  min_green=30 margin=200 max_green=45
+    23.35     22.02     24.50     23.52         48.0         43.0         48.0  max_wait  min_green=20 margin=200 max_green=45
+    23.41     21.85     24.31     24.07         62.0         45.0         62.0  max_wait  min_green=30 margin=200 max_green=60
+    23.53     21.85     24.66     24.07         62.0         42.0         62.0  max_wait  min_green=20 margin=200 max_green=60
+    23.55     21.85     24.74     24.07         62.0         43.0         62.0  max_wait  min_green=10 margin=200 max_green=60
+    23.55     21.85     24.74     24.07         62.0         43.0         62.0  max_wait  min_green=15 margin=200 max_green=60
+    23.57     18.35     34.84     17.51         35.0         55.0         36.0  ok        min_green=30 margin=0 max_green=45
+    23.57     18.35     34.84     17.51         35.0         55.0         36.0  ok        min_green=30 margin=0 max_green=60
+    23.65     18.50     34.84     17.62         35.0         55.0         35.0  ok        min_green=30 margin=25 max_green=45
+    23.65     18.50     34.84     17.62         35.0         55.0         35.0  ok        min_green=30 margin=25 max_green=60
+    24.05     18.79     33.62     19.76         44.0         45.0         40.0  ok        min_green=20 margin=100 max_green=45
+    24.20     19.01     33.62     19.98         44.0         45.0         54.0  max_wait  min_green=20 margin=100 max_green=60
+    24.39     18.96     34.44     19.76         45.0         51.0         40.0  ok        min_green=25 margin=100 max_green=45
+    24.55     19.24     34.44     19.98         45.0         51.0         54.0  max_wait  min_green=25 margin=100 max_green=60
+    24.72     19.73     34.49     19.94         45.0         56.0         54.0  max_wait  min_green=30 margin=100 max_green=60
+    24.76     19.91     34.49     19.89         46.0         56.0         45.0  ok        min_green=30 margin=100 max_green=45
+    24.87     15.91     42.47     16.22         32.0         46.0         30.0  ok        min_green=15 margin=50 max_green=45
+    24.87     15.91     42.47     16.22         32.0         46.0         30.0  ok        min_green=15 margin=50 max_green=60
+    26.18     23.35     32.77     22.42         46.0         59.0         46.0  baseline  fixed
+    27.41     18.79     43.67     19.76         44.0         56.0         40.0  ok        min_green=15 margin=100 max_green=45
+    27.55     19.01     43.67     19.98         44.0         56.0         54.0  max_wait  min_green=15 margin=100 max_green=60
+    30.85     18.79     54.00     19.76         44.0         49.0         40.0  ok        min_green=10 margin=100 max_green=45
+    30.99     19.01     54.00     19.98         44.0         49.0         54.0  max_wait  min_green=10 margin=100 max_green=60
+    31.84     15.91     63.40     16.22         32.0         55.0         30.0  ok        min_green=10 margin=50 max_green=45
+    31.84     15.91     63.40     16.22         32.0         55.0         30.0  ok        min_green=10 margin=50 max_green=60
+    35.14     12.58     80.65     12.19         15.0         47.0         15.0  ok        min_green=10 margin=0 max_green=45
+    35.14     12.58     80.65     12.19         15.0         47.0         15.0  ok        min_green=10 margin=0 max_green=60
+    35.49     13.24     79.91     13.30         25.0         47.0         19.0  ok        min_green=10 margin=25 max_green=45
+    35.49     13.24     79.91     13.30         25.0         47.0         19.0  ok        min_green=10 margin=25 max_green=60
+
+Selected: min_green=20 margin=0 max_green=45
+
+Held-out validation: held_out (200 / 600 veh/h), not used for selection
+
+           time_loss  avg_wait  max_wait
+fixed          25.66     14.80      46.0
+wait_time      16.27      6.50      25.0
+
+time loss below fixed: yes
+max wait within fixed: yes

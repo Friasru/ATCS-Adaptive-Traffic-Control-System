@@ -1,7 +1,8 @@
 import traci
 
-MIN_GREEN = 10
-MAX_GREEN = 60
+MIN_GREEN = 20
+MAX_GREEN = 45
+SWITCH_MARGIN = 0
 HOLD = 1000
 
 
@@ -33,7 +34,7 @@ class WaitTimeController:
         if elapsed >= MAX_GREEN and other_wait > 0:
             return True
         # strict inequality: ties keep the current green (no needless switching)
-        return other_wait > current_wait
+        return other_wait > current_wait + SWITCH_MARGIN
 
     def step(self, now):
         phase = traci.trafficlight.getPhase(self.tls_id)

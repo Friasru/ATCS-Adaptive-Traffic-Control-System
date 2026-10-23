@@ -5,6 +5,8 @@ from unittest import mock
 
 sys.path.insert(0, __file__.rsplit("/tests/", 1)[0])
 
+from controllers import wait_time  # noqa: E402
+
 PHASES = [
     SimpleNamespace(state="GGrr"),
     SimpleNamespace(state="yyrr"),
@@ -47,14 +49,14 @@ class WaitTimeTest(unittest.TestCase):
         c, t = self.controller()
         WAITS.update(b0=50)
         c.step(0)
-        c.step(5)
+        c.step(wait_time.MIN_GREEN - 1)
         t.trafficlight.setPhase.assert_not_called()
 
     def test_higher_wait_switches_to_yellow(self):
         c, t = self.controller()
         WAITS.update(b0=50, a0=1)
         c.step(0)
-        c.step(10)
+        c.step(wait_time.MIN_GREEN)
         t.trafficlight.setPhase.assert_called_once_with("A0", 1)
 
     def test_tie_keeps_green(self):
@@ -72,9 +74,18 @@ class WaitTimeTest(unittest.TestCase):
 
     def test_max_green_fairness(self):
         c, _ = self.controller()
-        self.assertTrue(c.should_switch(60, 100, 1))
-        self.assertFalse(c.should_switch(60, 100, 0))
-        self.assertFalse(c.should_switch(59, 100, 1))
+        self.assertTrue(c.should_switch(wait_time.MAX_GREEN, 100, 1))
+        self.assertFalse(c.should_switch(wait_time.MAX_GREEN, 100, 0))
+        self.assertFalse(c.should_switch(wait_time.MAX_GREEN - 1, 100, 1))
+
+    def test_switch_margin(self):
+        c, _ = self.controller()
+        elapsed = wait_time.MIN_GREEN
+        with mock.patch.object(wait_time, "SWITCH_MARGIN", 25):
+            self.assertFalse(c.should_switch(elapsed, 10, 35))
+            self.assertTrue(c.should_switch(elapsed, 10, 36))
+        with mock.patch.object(wait_time, "SWITCH_MARGIN", 0):
+            self.assertTrue(c.should_switch(elapsed, 10, 11))
 
     def test_no_switch_during_yellow(self):
         c, t = self.controller(phase=1)
@@ -87,7 +98,7 @@ class WaitTimeTest(unittest.TestCase):
         c, t = self.controller(phase=2)
         WAITS.update(a0=50)
         c.step(0)
-        c.step(10)
+        c.step(wait_time.MIN_GREEN)
         t.trafficlight.setPhase.assert_called_once_with("A0", 3)
 
 

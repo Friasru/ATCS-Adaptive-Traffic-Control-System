@@ -1,4 +1,5 @@
 import os
+import signal
 import subprocess
 import sys
 
@@ -9,6 +10,31 @@ from app import db
 # Returned to API clients on failure. Exception text can contain absolute
 # paths and the full command line, so details go to the server log only.
 SIMULATION_ERROR = "simulation failed"
+
+
+def run_simulation(cmd, cwd, timeout):
+    """Run runner.py in its own process group and stop the whole group on timeout.
+
+    Killing only runner.py can leave the sumo process it launched waiting on
+    its TraCI port indefinitely.
+    """
+    proc = subprocess.Popen(
+        cmd, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, start_new_session=True
+    )
+    try:
+        stdout, stderr = proc.communicate(timeout=timeout)
+    except subprocess.TimeoutExpired as exc:
+        try:
+            if hasattr(os, "killpg"):
+                os.killpg(proc.pid, signal.SIGKILL)
+            else:
+                proc.kill()
+        except ProcessLookupError:
+            pass
+        exc.stdout, exc.stderr = proc.communicate()
+        raise
+    if proc.returncode:
+        raise subprocess.CalledProcessError(proc.returncode, cmd, stdout, stderr)
 
 
 def execute_run(run):
@@ -31,14 +57,7 @@ def execute_run(run):
     try:
         import metrics
 
-        subprocess.run(
-            cmd,
-            cwd=sim_dir,
-            capture_output=True,
-            text=True,
-            check=True,
-            timeout=current_app.config["RUN_TIMEOUT_S"],
-        )
+        run_simulation(cmd, sim_dir, current_app.config["RUN_TIMEOUT_S"])
         stats = metrics.summarize(tripinfo)
     except Exception as exc:
         current_app.logger.exception(

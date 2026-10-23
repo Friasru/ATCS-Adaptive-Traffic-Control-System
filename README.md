@@ -110,6 +110,10 @@ Need `Authorization: Bearer <access_token>` (401 otherwise):
 
 The backend tests use an in-memory database and a test-only JWT secret, need no environment variables and never start SUMO.
 
+The simulation tests include a few real SUMO runs that check the adaptive controller against the fixed timer, and skip themselves if SUMO is not installed.
+
+The simulation tests include a few real SUMO runs that check the adaptive controller against the fixed timer, and skip themselves if SUMO is not installed.
+
 ## Known limitations
 
 - Runs execute synchronously inside the POST /api/runs request (a few seconds per simulated hour); there is no job queue.

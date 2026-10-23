@@ -171,17 +171,3 @@ def test_existing_post_endpoints_stay_public(client):
     assert created.status_code == 201
     # 400 from validation, not 401: no token needed to reach the handler
     assert client.post("/api/runs", json={"scenario_id": 1, "controller": "magic"}).status_code == 400
-
-
-def test_dev_secret_used_only_as_fallback(monkeypatch):
-    import importlib
-
-    import config
-
-    monkeypatch.setenv("JWT_SECRET_KEY", "from-the-environment-0123456789abcdef")
-    try:
-        assert importlib.reload(config).Config.JWT_SECRET_KEY == "from-the-environment-0123456789abcdef"
-        monkeypatch.delenv("JWT_SECRET_KEY")
-        assert importlib.reload(config).Config.JWT_SECRET_KEY == config.DEV_JWT_SECRET
-    finally:
-        importlib.reload(config)

@@ -61,13 +61,22 @@ Requires Python 3.10+, SUMO 1.18 or newer and the Python `traci` library (instal
 
 ## Running the web app
 
+The app will not start without a JWT signing secret. Pick one of:
+
+Local development (quickest). A random secret is generated each time the server starts, so you have to sign in again after a restart or code reload:
+
+    cd backend
+    ATCS_DEV=1 venv/bin/python run.py
+
+Stable secret (shared or deployed setups, or to stay signed in across restarts). Use a random value of at least 32 bytes and keep it out of the repository:
+
     cd backend
     export JWT_SECRET_KEY="$(python3 -c 'import secrets; print(secrets.token_hex(32))')"
     venv/bin/python run.py
 
-Then open http://127.0.0.1:5000/scenarios.html to create scenarios and run controllers, and http://127.0.0.1:5000/dashboard.html to compare them. The dashboard needs an account: use "Create account" on its sign-in form, or `POST /api/auth/register`.
+A missing, short or previously published secret stops startup with an error that says what to do. `ATCS_DEV=1` never overrides a weak `JWT_SECRET_KEY`; never set `ATCS_DEV=1` outside local development.
 
-`JWT_SECRET_KEY` signs login tokens. Without it the app falls back to a fixed development-only key and logs a warning; anyone who knows that key can forge tokens, so always set a long random value outside local development. Tokens expire after one hour. The dashboard keeps its token in memory only, so reloading the page signs you out.
+Then open http://127.0.0.1:5000/scenarios.html to create scenarios and run controllers, and http://127.0.0.1:5000/dashboard.html to compare them. The dashboard needs an account: use "Create account" on its sign-in form, or `POST /api/auth/register`. Tokens expire after one hour. The dashboard keeps its token in memory only, so reloading the page signs you out.
 
 The SQLite database is `backend/atcs.db`; tables are created on startup, existing data is kept.
 
@@ -99,7 +108,7 @@ Need `Authorization: Bearer <access_token>` (401 otherwise):
     cd backend && venv/bin/pytest
     cd simulation && ../backend/venv/bin/python -m pytest tests
 
-The backend tests use an in-memory database and never start SUMO.
+The backend tests use an in-memory database and a test-only JWT secret, need no environment variables and never start SUMO.
 
 ## Known limitations
 

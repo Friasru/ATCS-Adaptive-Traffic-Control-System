@@ -190,3 +190,17 @@ header nav a {
   color: #fff;
   text-decoration: underline;
 }
+
+.brand {
+  margin: 0;
+  padding: 0.3rem 0.7rem;
+  background: #fff;
+  border-radius: 8px;
+  line-height: 0;
+}
+
+.brand img {
+  display: block;
+  height: 72px;
+  width: auto;
+}

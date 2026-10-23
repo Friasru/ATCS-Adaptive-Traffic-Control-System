@@ -1,14 +1,32 @@
+import ast
+import hashlib
 import importlib
+import inspect
 import logging
 
 import pytest
 from flask_jwt_extended import create_access_token
 
-from app import MIN_JWT_SECRET_BYTES, create_app, db
+import app as app_module
+import config
+from app import KNOWN_SECRET_HASHES, MIN_JWT_SECRET_BYTES, create_app, db
 from config import Config
 
 STRONG = "s" * MIN_JWT_SECRET_BYTES
-FORMER_DEV_FALLBACK = "atcs-dev-only-secret-do-not-use-in-production"
+# SHA-256 of the former committed development fallback. The value itself is
+# deliberately not repeated here.
+FORMER_DEV_FALLBACK_SHA256 = "5d81d4a8a15e75736dc65851285e3004279dd7f2ad8722c16a8296cbff145782"
+# Long enough to pass the length check, so only the denylist can reject it.
+DENYLISTED = "denylisted-test-secret-0123456789abcdef"
+
+
+def sha256(text):
+    return hashlib.sha256(text.encode()).hexdigest()
+
+
+@pytest.fixture
+def denylist_test_secret(monkeypatch):
+    monkeypatch.setattr("app.KNOWN_SECRET_HASHES", KNOWN_SECRET_HASHES | {sha256(DENYLISTED)})
 
 
 def make_config(secret=None, dev=False):
@@ -44,18 +62,23 @@ def test_missing_secret_refuses_to_start(secret):
         create_app(make_config(secret))
 
 
-@pytest.mark.parametrize(
-    "secret", ["short", "x" * (MIN_JWT_SECRET_BYTES - 1), FORMER_DEV_FALLBACK]
-)
-def test_insecure_secret_refuses_to_start(secret):
+@pytest.mark.parametrize("secret", ["short", "x" * (MIN_JWT_SECRET_BYTES - 1)])
+def test_short_secret_refuses_to_start(secret):
     with pytest.raises(RuntimeError, match="insecure") as info:
         create_app(make_config(secret))
     assert secret not in str(info.value)
 
 
-def test_former_fallback_rejected_even_in_dev_mode():
-    with pytest.raises(RuntimeError, match="insecure"):
-        create_app(make_config(FORMER_DEV_FALLBACK, dev=True))
+def test_former_fallback_is_denylisted():
+    assert FORMER_DEV_FALLBACK_SHA256 in KNOWN_SECRET_HASHES
+
+
+@pytest.mark.parametrize("dev", [False, True])
+def test_denylisted_secret_refuses_to_start(denylist_test_secret, dev):
+    assert len(DENYLISTED.encode()) >= MIN_JWT_SECRET_BYTES
+    with pytest.raises(RuntimeError, match="insecure") as info:
+        create_app(make_config(DENYLISTED, dev=dev))
+    assert DENYLISTED not in str(info.value)
 
 
 def test_weak_explicit_secret_not_rescued_by_dev_mode():
@@ -122,8 +145,6 @@ def test_full_auth_flow_with_configured_secret(build, caplog):
     ],
 )
 def test_config_reads_environment(monkeypatch, env, secret, dev):
-    import config
-
     monkeypatch.delenv("JWT_SECRET_KEY", raising=False)
     monkeypatch.delenv("ATCS_DEV", raising=False)
     for key, value in env.items():
@@ -137,11 +158,12 @@ def test_config_reads_environment(monkeypatch, env, secret, dev):
         importlib.reload(config)
 
 
-def test_no_constant_fallback_in_source():
-    import inspect
-
-    import app as app_module
-    import config
-
+def test_no_denylisted_secret_in_source():
     for module in (app_module, config):
-        assert FORMER_DEV_FALLBACK not in inspect.getsource(module)
+        literals = [
+            node.value
+            for node in ast.walk(ast.parse(inspect.getsource(module)))
+            if isinstance(node, ast.Constant) and isinstance(node.value, str)
+        ]
+        assert literals
+        assert not [text for text in literals if sha256(text) in KNOWN_SECRET_HASHES]

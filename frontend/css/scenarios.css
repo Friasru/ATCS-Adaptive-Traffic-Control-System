@@ -168,3 +168,39 @@ td.failed {
     grid-template-columns: 1fr;
   }
 }
+
+header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
+header nav {
+  display: flex;
+  gap: 1.25rem;
+}
+
+header nav a[aria-current] {
+  font-weight: 700;
+}
+
+header nav a {
+  color: #fff;
+  text-decoration: underline;
+}
+
+.brand {
+  margin: 0;
+  padding: 0.3rem 0.7rem;
+  background: #fff;
+  border-radius: 8px;
+  line-height: 0;
+}
+
+.brand img {
+  display: block;
+  height: 72px;
+  width: auto;
+}

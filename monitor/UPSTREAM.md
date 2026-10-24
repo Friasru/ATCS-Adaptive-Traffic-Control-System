@@ -19,6 +19,7 @@ These files are not in the upstream repository; they connect the engine to the A
 - `web_service.py` - local HTTP service (127.0.0.1) around `MonitoringEngine`
 - `tests/test_web_service.py`
 - `docs/web_service.md` - setup, security model and API
+- `docs/desktop_telemetry.md` - documents a desktop sends to the ATCS backend (the backend side is in `backend/`; no monitor code changed)
 
 ### Not imported
 

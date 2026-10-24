@@ -2,3 +2,46 @@ __pycache__/
 simulation/output/
 backend/venv/
 backend/atcs.db
+
+# Virtual environments (Flask and the monitor each have their own)
+.venv/
+.venv-win*/
+venv/
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Python and test caches
+*.py[cod]
+.pytest_cache/
+
+# Monitor runtime data: databases, logs, recordings, exports, downloaded
+# weights and test media. monitor/.gitignore covers its own folders; these
+# rules also catch copies anywhere else in the repository.
+*.sqlite3
+*.sqlite3-*
+*.db
+*.log
+*.pt
+*.onnx
+*.mp4
+*.avi
+*.mkv
+*.mov
+*.webm
+monitor/data/*
+!monitor/data/.gitkeep
+monitor/models/*
+!monitor/models/.gitkeep
+monitor/recordings/*
+!monitor/recordings/.gitkeep
+monitor/exports/*
+!monitor/exports/.gitkeep
+
+# Build artifacts and installers
+build/
+dist/
+*.exe
+*.msi

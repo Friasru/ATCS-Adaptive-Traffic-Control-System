@@ -1,0 +1,132 @@
+{
+  "_doc": "Hand-labelled line crossings, made by inspecting raw frames (0.5 s contact sheets) without looking at any model output. Riders on bicycles are also counted as 'person' (COCO semantics). Directions follow the app convention: side A is the right-hand side when walking from P1 to P2 on screen.",
+  "videos": {
+    "person-bicycle-car-detection.mp4": {
+      "lines": [
+        {
+          "line_id": "h50",
+          "p1": [
+            0.0,
+            0.5
+          ],
+          "p2": [
+            1.0,
+            0.5
+          ],
+          "direction": "both",
+          "enabled": true
+        },
+        {
+          "line_id": "v80",
+          "p1": [
+            0.8,
+            0.0
+          ],
+          "p2": [
+            0.8,
+            1.0
+          ],
+          "direction": "both",
+          "enabled": true
+        }
+      ],
+      "expected": {
+        "h50": {
+          "a_to_b": {
+            "person": 1,
+            "car": 2,
+            "motorcycle": 0,
+            "bicycle": 0,
+            "bus": 0,
+            "truck": 0
+          },
+          "b_to_a": {
+            "person": 0,
+            "car": 0,
+            "motorcycle": 0,
+            "bicycle": 0,
+            "bus": 0,
+            "truck": 0
+          }
+        },
+        "v80": {
+          "a_to_b": {
+            "person": 3,
+            "car": 0,
+            "motorcycle": 0,
+            "bicycle": 2,
+            "bus": 0,
+            "truck": 0
+          },
+          "b_to_a": {
+            "person": 0,
+            "car": 0,
+            "motorcycle": 0,
+            "bicycle": 0,
+            "bus": 0,
+            "truck": 0
+          }
+        }
+      },
+      "notes": {
+        "h50": "person #1 walks up through the line at t~5 s; white car at t~16.8 s and green car at t~46.3 s drive upward through it. Cyclists and pedestrian #2 stay in the top quarter.",
+        "v80": "person #1 crosses left->right at t~4 s; cyclist #1 at t~27.3 s and cyclist #2 at t~47.3 s ride left->right (bicycle + rider). Both cars stay left of x=0.4."
+      },
+      "labelled_classes": [
+        "person",
+        "car",
+        "motorcycle",
+        "bicycle",
+        "bus",
+        "truck"
+      ]
+    },
+    "street_slovenska.mp4": {
+      "lines": [
+        {
+          "line_id": "v50",
+          "p1": [
+            0.5,
+            0.0
+          ],
+          "p2": [
+            0.5,
+            1.0
+          ],
+          "direction": "both",
+          "enabled": true
+        }
+      ],
+      "labelled_classes": [
+        "car",
+        "motorcycle",
+        "bicycle",
+        "bus",
+        "truck"
+      ],
+      "expected": {
+        "v50": {
+          "a_to_b": {
+            "person": 0,
+            "car": 0,
+            "motorcycle": 0,
+            "bicycle": 2,
+            "bus": 2,
+            "truck": 0
+          },
+          "b_to_a": {
+            "person": 0,
+            "car": 0,
+            "motorcycle": 0,
+            "bicycle": 1,
+            "bus": 0,
+            "truck": 0
+          }
+        }
+      },
+      "notes": {
+        "v50": "Bus route 14 (t~37 s) and bus route 6 (t~45.5 s) drive left->right past the camera. Cyclist in white shirt rides right->left at t~11.2 s; woman cyclist (t~26.5 s) and red-shirt cyclist (t~27.4 s) ride left->right. Police car stays left of x=0.35. Pedestrians are NOT labelled (many tiny distant people) and are excluded from scoring."
+      }
+    }
+  }
+}

@@ -1,0 +1,19 @@
+[project]
+name = "atcs-monitor"
+version = "1.0.0"
+description = "Lightweight desktop app that detects, tracks, counts and records people and vehicles from a camera or video file."
+requires-python = ">=3.10"
+readme = "README.md"
+
+[project.scripts]
+atcs-monitor = "app.main:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "model: needs the real YOLO weights in models/",
+    "media: needs the downloaded test videos in data/test_media/",
+    "gui: Qt GUI tests",
+    "camera: needs a physical camera",
+]
+filterwarnings = ["ignore::DeprecationWarning"]

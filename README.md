@@ -21,6 +21,7 @@ The adaptive controller wins in uneven, balanced and held-out traffic. In satura
 - backend/ - Flask API and database
 - frontend/ - scenario configuration page and results dashboard
 - results/ - shared results data
+- monitor/ - ATCS Monitor camera detection and counting app, imported from its own repository with its own environment (see monitor/UPSTREAM.md)
 
 ## Wait-time controller
 

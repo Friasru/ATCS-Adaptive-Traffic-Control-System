@@ -74,6 +74,14 @@ def no_params():
         raise MonitorError(400, "invalid_body", "this endpoint takes no parameters")
 
 
+@api_bp.route("/monitor/access")
+@monitor_access()
+def monitor_access_info():
+    """What the signed-in account may do. Read from its grant; never contacts the service."""
+    role = current_role()
+    return {"role": role, "can_view": True, "can_control": role == "operator"}
+
+
 @api_bp.route("/monitor/status")
 @monitor_access()
 def monitor_status():

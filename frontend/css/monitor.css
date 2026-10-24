@@ -1,0 +1,421 @@
+/* Monitor page. Builds on dashboard.css (colours, top bar, panels, buttons,
+   tables) and only adds what the live view needs. */
+
+.monitor-page main {
+  max-width: 1280px;
+}
+
+.monitor-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(300px, 1fr);
+  grid-template-areas:
+    "feed side"
+    "sessions sessions";
+  gap: 1rem;
+  align-items: start;
+}
+
+.monitor-layout[hidden] {
+  display: none;
+}
+
+.monitor-layout > * {
+  min-width: 0;
+}
+
+.feed-panel {
+  grid-area: feed;
+}
+
+.side {
+  grid-area: side;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem;
+  min-width: 0;
+}
+
+.side > * {
+  min-width: 0;
+}
+
+.sessions-panel {
+  grid-area: sessions;
+}
+
+.denied {
+  max-width: 520px;
+  width: 100%;
+  margin: 2rem auto 0;
+}
+
+.denied p {
+  margin: 0.6rem 0 1rem;
+}
+
+code,
+.mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.85em;
+  overflow-wrap: anywhere;
+}
+
+/* ---------- feed ---------- */
+
+.feed {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  background: #0f1c28;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.feed img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.feed img[hidden] {
+  display: none;
+}
+
+.feed-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 1rem;
+  color: #d9e2ec;
+  text-align: center;
+  font-size: 0.95rem;
+}
+
+.feed-overlay[hidden] {
+  display: none;
+}
+
+/* A message shown on top of the last frame (feed interrupted). */
+.feed-overlay.over-frame {
+  inset: auto 0 0 0;
+  background: rgba(15, 28, 40, 0.82);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.85rem;
+}
+
+.spinner {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+}
+
+.spinner[hidden] {
+  display: none;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation-duration: 3s;
+  }
+}
+
+.feed-meta {
+  min-height: 1rem;
+  margin: 0.4rem 0 0;
+  font-size: 0.8rem;
+}
+
+/* ---------- badges ---------- */
+
+.state-badge,
+.rec-badge,
+.role-badge {
+  display: inline-block;
+  padding: 0.1rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+.state-badge {
+  background: #e4e7eb;
+  color: var(--text);
+}
+
+.state-badge[data-state="Detecting"] {
+  background: #d3f9d8;
+  color: var(--good);
+}
+
+.state-badge[data-state="Recording"] {
+  background: #ffe3e3;
+  color: var(--bad);
+}
+
+.state-badge[data-state="Initializing"],
+.state-badge[data-state="Stopping"] {
+  background: #fff3bf;
+  color: #8a5a00;
+}
+
+.state-badge[data-state="Error"],
+.state-badge[data-state="unavailable"] {
+  background: #ffe3e3;
+  color: var(--bad);
+}
+
+.rec-badge {
+  background: var(--bad);
+  color: #fff;
+}
+
+.rec-badge::before {
+  content: "";
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-right: 0.35rem;
+  border-radius: 50%;
+  background: #fff;
+  vertical-align: 1px;
+}
+
+.rec-badge[hidden],
+.role-badge[hidden] {
+  display: none;
+}
+
+.role-badge {
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+}
+
+/* ---------- controls ---------- */
+
+.controls-panel .field {
+  min-width: 0;
+}
+
+.check {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0.6rem 0 0;
+  font-size: 0.88rem;
+}
+
+.check.disabled {
+  color: var(--muted);
+}
+
+.check input {
+  width: 1rem;
+  height: 1rem;
+  margin: 0;
+}
+
+.control-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  margin-top: 0.9rem;
+}
+
+.control-grid button {
+  min-height: 2.6rem;
+}
+
+button.rec {
+  background: #fff;
+  border-color: var(--bad);
+  color: var(--bad);
+}
+
+button.rec:hover {
+  background: #fff5f5;
+}
+
+button:disabled,
+button:disabled:hover {
+  cursor: not-allowed;
+}
+
+button[aria-busy="true"] {
+  cursor: progress;
+}
+
+button.secondary:disabled:hover {
+  background: #fff;
+}
+
+button:not(.secondary):not(.rec):not(.link):disabled:hover {
+  background: var(--accent);
+}
+
+.status-list,
+.perf-list {
+  display: grid;
+  gap: 0.3rem;
+  margin: 0.9rem 0 0;
+  font-size: 0.88rem;
+}
+
+.status-list > div,
+.perf-list > div {
+  display: grid;
+  grid-template-columns: 8.5rem minmax(0, 1fr);
+  gap: 0.5rem;
+}
+
+.perf-list {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 1rem;
+}
+
+.perf-list > div {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.perf-list dd {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+dt {
+  color: var(--muted);
+}
+
+dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+dd.error {
+  color: var(--bad);
+}
+
+.controls-panel .small {
+  margin-top: 0.75rem;
+}
+
+.controls-panel .message:empty {
+  display: none;
+}
+
+/* ---------- statistics ---------- */
+
+.small-inline {
+  font-size: 0.82rem;
+}
+
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin-bottom: 0.9rem;
+}
+
+.tile {
+  display: grid;
+  gap: 0.1rem;
+  padding: 0.55rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: #f7f8fa;
+}
+
+.tile-value {
+  font-size: 1.35rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.tile-label {
+  font-size: 0.75rem;
+  color: var(--muted);
+  line-height: 1.25;
+}
+
+table.compact th,
+table.compact td {
+  padding: 0.3rem 0.5rem;
+}
+
+h3.sub {
+  margin: 0.9rem 0 0.4rem;
+  font-size: 0.9rem;
+}
+
+/* ---------- sessions ---------- */
+
+#sessions-message:empty {
+  display: none;
+}
+
+#sessions-message {
+  margin: 0 0 0.5rem;
+}
+
+#sessions-message.error {
+  color: var(--bad);
+}
+
+td.wrap {
+  white-space: normal;
+  min-width: 8rem;
+  overflow-wrap: anywhere;
+}
+
+.session-status[data-status="completed"] {
+  color: var(--good);
+}
+
+.session-status[data-status="error"],
+.session-status[data-status="interrupted"] {
+  color: var(--bad);
+}
+
+/* ---------- small screens ---------- */
+
+@media (max-width: 960px) {
+  .monitor-layout {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "feed"
+      "side"
+      "sessions";
+  }
+}
+
+@media (max-width: 480px) {
+  .tiles {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .perf-list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .control-grid button {
+    min-height: 2.9rem;
+  }
+
+  .brand img {
+    height: 56px;
+  }
+}

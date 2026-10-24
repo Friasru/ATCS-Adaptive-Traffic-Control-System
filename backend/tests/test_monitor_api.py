@@ -426,6 +426,80 @@ def test_operators_are_also_viewers(build, stub):
     assert app.test_client().get("/api/monitor/status", headers=headers(app, "op_user")).status_code == 200
 
 
+# ------------------------------------------------------- /api/monitor/access
+ACCESS = "/api/monitor/access"
+
+
+@pytest.mark.parametrize("user,expected", [
+    ("op_user", {"role": "operator", "can_view": True, "can_control": True}),
+    ("view_user", {"role": "viewer", "can_view": True, "can_control": False}),
+])
+def test_access_reports_own_capabilities(mon_app, stub, user, expected):
+    r = mon_app.test_client().get(ACCESS, headers=headers(mon_app, user))
+    assert r.status_code == 200 and r.get_json() == expected
+    assert stub.requests == []
+
+
+def test_access_unlisted_account_is_403(mon_app, stub):
+    r = mon_app.test_client().get(ACCESS, headers=headers(mon_app, "stranger"))
+    assert r.status_code == 403 and r.get_json() == {"error": "not authorized for the monitor"}
+    assert stub.requests == []
+
+
+def test_access_needs_a_valid_jwt(mon_app, stub):
+    client = mon_app.test_client()
+    assert client.get(ACCESS).status_code == 401
+    for bad in ("Bearer not-a-jwt", "Bearer " + SERVICE_SECRET, "Basic abc"):
+        assert client.get(ACCESS, headers={"Authorization": bad}).status_code == 401
+    r = client.get(ACCESS, headers=headers(mon_app, "op_user", expires_delta=timedelta(seconds=-1)))
+    assert r.status_code == 401 and r.get_json() == {"error": "token expired"}
+    assert stub.requests == []
+
+
+def test_access_ignores_client_claims_and_parameters(mon_app, stub):
+    client = mon_app.test_client()
+    claims = headers(mon_app, "view_user", additional_claims={"role": "operator", "can_control": True})
+    assert client.get(ACCESS + "?role=operator&user=op_user", headers=claims).get_json()["can_control"] is False
+    # Another account's capabilities cannot be asked for.
+    assert client.get(ACCESS + "?username=op_user", headers=headers(mon_app, "stranger")).status_code == 403
+
+
+def test_access_follows_revoke_regrant_and_stale_grants(mon_app, stub):
+    client = mon_app.test_client()
+    get = lambda: client.get(ACCESS, headers=headers(mon_app, "op_user"))  # noqa: E731
+    with mon_app.app_context():
+        monitor_access.revoke("op_user")
+    assert get().status_code == 403
+    with mon_app.app_context():
+        monitor_access.grant("op_user", "viewer")
+    assert get().get_json()["can_control"] is False
+    with mon_app.app_context():
+        monitor_access.grant("op_user", "operator")
+    assert get().get_json()["can_control"] is True
+    with mon_app.app_context():  # stale: the account's credentials changed after the grant
+        user = User.query.filter_by(username="op_user").one()
+        user.password_hash = bcrypt.generate_password_hash("another-password").decode()
+        db.session.commit()
+    assert get().status_code == 403
+    assert stub.requests == []
+
+
+def test_access_works_without_the_monitor_service(build, stub):
+    for kw in ({"secret": None}, {"port": free_port()}):
+        app = build(**kw)
+        r = app.test_client().get(ACCESS, headers=headers(app, "op_user"))
+        assert r.status_code == 200 and r.get_json()["can_control"] is True
+    assert stub.requests == []
+
+
+@pytest.mark.parametrize("method", ["POST", "PUT", "DELETE"])
+def test_access_is_read_only(mon_app, stub, method):
+    r = mon_app.test_client().open(ACCESS, method=method, headers=headers(mon_app, "op_user"), json={"role": "operator"})
+    assert r.status_code == 405
+    with mon_app.app_context():
+        assert {g.role for g in MonitorGrant.query.all()} == {"operator", "viewer"}
+
+
 # ---------------------------------------------------------- validation
 @pytest.mark.parametrize("body", [
     {}, {"source": ""}, {"source": "/etc/passwd"}, {"source": "video:../secret.mp4"}, {"source": "video:a/b.mp4"},

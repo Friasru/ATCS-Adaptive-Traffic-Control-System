@@ -187,6 +187,7 @@ All need a JWT (`Authorization: Bearer <access_token>` from `/api/auth/login`).
 
 | Method | Path | Role | Success |
 |---|---|---|---|
+| GET | /api/monitor/access | viewer | 200 `{"role", "can_view", "can_control"}` for the signed-in account |
 | GET | /api/monitor/status | viewer | 200 status document |
 | GET | /api/monitor/sources | viewer | 200 |
 | GET | /api/monitor/sessions | viewer | 200 |
@@ -195,6 +196,15 @@ All need a JWT (`Authorization: Bearer <access_token>` from `/api/auth/login`).
 | POST | /api/monitor/stop | operator | 200 |
 | POST | /api/monitor/recording/start | operator | 202 |
 | POST | /api/monitor/recording/stop | operator | 202 |
+
+`/api/monitor/access` tells the browser what the signed-in account may do:
+`{"role": "operator", "can_view": true, "can_control": true}` for an operator,
+`{"role": "viewer", "can_view": true, "can_control": false}` for a viewer. It is
+read from that account's own grant in the database (never from the request,
+query parameters or JWT claims), answers 403 like the other endpoints for an
+account without a valid grant and 401 for a missing, invalid or expired JWT,
+and never contacts the monitor service, so it works while the service is down.
+It is GET only; no endpoint changes grants.
 
 Order of checks: JWT (401), role (403), request body (400), configuration
 (503), then the service call. Responses from the service:
@@ -238,9 +248,13 @@ Neither needs a camera, CUDA or the YOLO weights: the monitor tests use a
 scripted detector and generated videos, and the backend tests replace the
 service with a standard-library stub.
 
+The browser page is `frontend/monitor.html` (Phase 4). Its tests run in
+headless Chromium against a local mock of these endpoints:
+
+    cd frontend/tests && npm ci && npm test
+
 ## Not done yet
 
-* Phase 4: the browser page (`frontend/monitor.html`) using these endpoints.
 * Phase 5: full session history, exports and recording downloads.
 * Real webcams through the service have not been tested (the WSL2 development
   machine has no camera device).

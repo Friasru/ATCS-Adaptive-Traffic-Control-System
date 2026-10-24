@@ -10,10 +10,10 @@ desktop ATCS Monitor ──device token──> Flask /api/desktop/telemetry/*  (
 browser              ──JWT + grant──> Flask /api/monitor/desktop/*    (read only)
 ```
 
-Phase 5a is the backend only. The desktop side that sends these documents
-(Phase 5b) and the Monitor page that shows them (Phase 5c) come later. Nothing
-in the monitor engine or the desktop app was changed. The Phase 3/4 monitor
-service and `/api/monitor/*` work as before.
+Phase 5a is the backend only. The desktop side that sends these documents is
+the Phase 5b desktop link ([desktop_link.md](desktop_link.md)); the Monitor page
+that shows them (Phase 5c) comes later. The Phase 3/4 monitor service and
+`/api/monitor/*` work as before.
 
 ## 1. Registering a desktop (device setup)
 

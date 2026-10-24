@@ -72,7 +72,9 @@ def setup_logging(verbose: bool = False) -> Path:
     return log_file
 
 
-def main(argv: list[str] | None = None) -> int:
+def main(argv: list[str] | None = None, window_hook=None) -> int:
+    """Run the app. `window_hook(window)` (optional, used by the desktop link) is called once
+    the window is shown and may return a cleanup callable, run when the event loop ends."""
     ap = argparse.ArgumentParser(prog="atcs-monitor", description=f"{APP_NAME} {__version__}")
     ap.add_argument("--video", help="pre-select a video file as source")
     ap.add_argument("--camera", type=int, metavar="INDEX", help="pre-select the discovered camera with this index")
@@ -135,6 +137,12 @@ def main(argv: list[str] | None = None) -> int:
     win.show()
     if sys.platform == "win32":
         watch_installer_close_requests(win)
+    hook_cleanup = None
+    if window_hook is not None:
+        try:
+            hook_cleanup = window_hook(win)
+        except Exception:
+            log.exception("Window hook failed; continuing without it")
 
     def start_selected():
         QTimer.singleShot(300, win.start_monitoring)
@@ -173,6 +181,11 @@ def main(argv: list[str] | None = None) -> int:
     if args.quit_after > 0:
         QTimer.singleShot(args.quit_after, win.close)
     rc = app.exec()
+    if hook_cleanup is not None:
+        try:
+            hook_cleanup()
+        except Exception:
+            log.exception("Window hook cleanup failed")
     # Destroy Qt objects deterministically before the interpreter tears down
     # (otherwise PySide6 may finalize widgets after QApplication is gone).
     win.deleteLater()

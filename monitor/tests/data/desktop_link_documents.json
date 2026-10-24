@@ -1,0 +1,263 @@
+{
+  "crossing_events": {
+    "events": [
+      {
+        "class": "car",
+        "direction": "a_to_b",
+        "line_id": "line-1",
+        "timestamp": "2026-10-24T10:00:05.000+00:00",
+        "track_id": 7
+      },
+      {
+        "class": "person",
+        "direction": "b_to_a",
+        "line_id": "line-1",
+        "timestamp": "2026-10-24T10:00:05.000+00:00",
+        "track_id": 9
+      }
+    ],
+    "kind": "crossing_events",
+    "schema_version": "1.0",
+    "session_id": "0123456789abcdef0123456789abcdef",
+    "source": "camera",
+    "source_id": "Integrated Camera",
+    "started_at": "2026-10-24T10:00:00.000+00:00"
+  },
+  "desktop_status_idle": {
+    "app": {
+      "name": "ATCS Monitor",
+      "version": "1.0.0"
+    },
+    "camera_status": "none",
+    "device": null,
+    "instance_id": "fedcba9876543210fedcba9876543210",
+    "instance_started_at": "2026-10-24T10:00:00.000+00:00",
+    "kind": "desktop_status",
+    "last_error": null,
+    "message": "",
+    "performance": {
+      "active_tracks": 0,
+      "capture_fps": 0.0,
+      "frames_dropped": 0,
+      "inference_fps": 0.0,
+      "latency_ms": 0.0,
+      "recording_fps": 0.0,
+      "recording_frames_dropped": 0
+    },
+    "recording": {
+      "active": false,
+      "file": null
+    },
+    "schema_version": "1.0",
+    "sent_at": "2026-10-24T10:00:05.000+00:00",
+    "seq": 1,
+    "session": null,
+    "source": null,
+    "state": "Idle"
+  },
+  "desktop_status_recording": {
+    "app": {
+      "name": "ATCS Monitor",
+      "version": "1.0.0"
+    },
+    "camera_status": "ok",
+    "device": "cpu",
+    "instance_id": "fedcba9876543210fedcba9876543210",
+    "instance_started_at": "2026-10-24T10:00:00.000+00:00",
+    "kind": "desktop_status",
+    "last_error": null,
+    "message": "Detecting on camera:0:Integrated Camera (cpu, 640 px)",
+    "performance": {
+      "active_tracks": 3,
+      "capture_fps": 29.9,
+      "frames_dropped": 0,
+      "inference_fps": 14.8,
+      "latency_ms": 21.0,
+      "recording_fps": 0.0,
+      "recording_frames_dropped": 0
+    },
+    "recording": {
+      "active": true,
+      "file": "atcs_20261024-100000.mp4"
+    },
+    "schema_version": "1.0",
+    "sent_at": "2026-10-24T10:00:05.000+00:00",
+    "seq": 2,
+    "session": {
+      "crossings": {
+        "bicycle": 0,
+        "bus": 0,
+        "car": 1,
+        "motorcycle": 0,
+        "person": 0,
+        "truck": 0
+      },
+      "frames_processed": 55,
+      "line_totals": {
+        "line-1": {
+          "a_to_b": {
+            "bicycle": 0,
+            "bus": 0,
+            "car": 1,
+            "motorcycle": 0,
+            "person": 0,
+            "truck": 0
+          },
+          "b_to_a": {
+            "bicycle": 0,
+            "bus": 0,
+            "car": 0,
+            "motorcycle": 0,
+            "person": 0,
+            "truck": 0
+          }
+        }
+      },
+      "session_id": "0123456789abcdef0123456789abcdef",
+      "started_at": "2026-10-24T10:00:00.000+00:00",
+      "timestamp": "2026-10-24T10:00:05.000+00:00",
+      "unique": {
+        "bicycle": 0,
+        "bus": 0,
+        "car": 3,
+        "motorcycle": 0,
+        "person": 0,
+        "truck": 0
+      },
+      "visible": {
+        "bicycle": 0,
+        "bus": 0,
+        "car": 2,
+        "motorcycle": 0,
+        "person": 1,
+        "truck": 0
+      }
+    },
+    "source": {
+      "kind": "camera",
+      "label": "Integrated Camera"
+    },
+    "state": "Recording"
+  },
+  "session_summary_completed": {
+    "avg_inference_fps": 15.0,
+    "crossing_event_count": 2,
+    "crossings": {
+      "bicycle": 0,
+      "bus": 0,
+      "car": 1,
+      "motorcycle": 0,
+      "person": 1,
+      "truck": 0
+    },
+    "duration_s": 300.0,
+    "ended_at": "2026-10-24T10:05:00.000+00:00",
+    "frames_processed": 4500,
+    "kind": "session_summary",
+    "line_totals": {
+      "line-1": {
+        "a_to_b": {
+          "bicycle": 0,
+          "bus": 0,
+          "car": 1,
+          "motorcycle": 0,
+          "person": 0,
+          "truck": 0
+        },
+        "b_to_a": {
+          "bicycle": 0,
+          "bus": 0,
+          "car": 0,
+          "motorcycle": 0,
+          "person": 1,
+          "truck": 0
+        }
+      }
+    },
+    "model": {
+      "device": "cpu",
+      "name": "yolo26n.pt",
+      "version": "yolo26n.pt sha256:9b09cc8bf347 ultralytics 8.4.184"
+    },
+    "recordings": [
+      {
+        "codec": "avc1",
+        "duration_s": 120.0,
+        "file": "atcs_20261024-100000.mp4",
+        "ok": true
+      }
+    ],
+    "schema_version": "1.0",
+    "session_id": "0123456789abcdef0123456789abcdef",
+    "source": "camera",
+    "source_id": "Integrated Camera",
+    "started_at": "2026-10-24T10:00:00.000+00:00",
+    "stats_complete": true,
+    "status": "completed",
+    "unique": {
+      "bicycle": 0,
+      "bus": 0,
+      "car": 4,
+      "motorcycle": 0,
+      "person": 2,
+      "truck": 0
+    }
+  },
+  "session_summary_interrupted": {
+    "avg_inference_fps": null,
+    "crossing_event_count": 2,
+    "crossings": {
+      "bicycle": 0,
+      "bus": 0,
+      "car": 1,
+      "motorcycle": 0,
+      "person": 1,
+      "truck": 0
+    },
+    "duration_s": 0.0,
+    "ended_at": "2026-10-24T10:05:00.000+00:00",
+    "frames_processed": 0,
+    "kind": "session_summary",
+    "line_totals": {
+      "line-1": {
+        "a_to_b": {
+          "bicycle": 0,
+          "bus": 0,
+          "car": 1,
+          "motorcycle": 0,
+          "person": 0,
+          "truck": 0
+        },
+        "b_to_a": {
+          "bicycle": 0,
+          "bus": 0,
+          "car": 0,
+          "motorcycle": 0,
+          "person": 1,
+          "truck": 0
+        }
+      }
+    },
+    "model": {
+      "device": "cpu",
+      "name": "yolo26n.pt",
+      "version": "yolo26n.pt sha256:9b09cc8bf347 ultralytics 8.4.184"
+    },
+    "recordings": [],
+    "schema_version": "1.0",
+    "session_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "source": "camera",
+    "source_id": "Integrated Camera",
+    "started_at": "2026-10-24T10:00:00.000+00:00",
+    "stats_complete": false,
+    "status": "interrupted",
+    "unique": {
+      "bicycle": 0,
+      "bus": 0,
+      "car": 0,
+      "motorcycle": 0,
+      "person": 0,
+      "truck": 0
+    }
+  }
+}

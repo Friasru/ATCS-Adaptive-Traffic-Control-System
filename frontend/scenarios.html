@@ -17,6 +17,23 @@
   </header>
   <main>
     <section class="card">
+      <h2>How it works</h2>
+      <video controls preload="metadata" muted>
+        <source src="media/simulation-demo.mp4" type="video/mp4">
+        Your browser cannot play this video.
+      </video>
+      <p class="caption">The same traffic runs through a fixed timer and through the adaptive controller, simulated in SUMO.</p>
+      <ol class="flow">
+        <li><strong>Browser</strong><span>You choose a scenario and controllers on this page and press Run.</span></li>
+        <li><strong>Flask API</strong><span>The server checks the request and creates a run record in the database.</span></li>
+        <li><strong>Simulation runner</strong><span>The server starts a separate process with the scenario's traffic volumes.</span></li>
+        <li><strong>SUMO via TraCI</strong><span>Every simulated second, the controller reads the queues and decides when the light changes.</span></li>
+        <li><strong>Metrics saved</strong><span>When the hour ends, average wait and time loss are calculated and stored.</span></li>
+        <li><strong>Results shown here</strong><span>This page and the dashboard read the stored runs and display them.</span></li>
+      </ol>
+    </section>
+
+    <section class="card">
       <h2>Create a scenario</h2>
       <form id="scenario-form">
         <label>Name

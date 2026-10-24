@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ATCS - Monitor</title>
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/monitor.css">
+</head>
+<body class="monitor-page">
+  <header class="topbar">
+    <div class="brand"><img src="img/logo.svg" alt="ATCS - Adaptive Traffic Control System"></div>
+    <nav>
+      <a href="scenarios.html">Scenarios</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="monitor.html" aria-current="page">Monitor</a>
+    </nav>
+    <div class="session" id="session" hidden>
+      <span id="session-user"></span>
+      <span id="role-badge" class="role-badge" hidden></span>
+      <button type="button" id="logout-button" class="link">Sign out</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="panel login" id="login-panel" aria-labelledby="login-title">
+      <h1 id="login-title">Sign in</h1>
+      <p class="muted">The live monitor needs an account with monitor access, granted by an administrator.</p>
+      <form id="login-form" novalidate>
+        <label for="username">Username</label>
+        <input type="text" id="username" autocomplete="username" maxlength="64" required>
+        <label for="password">Password</label>
+        <input type="password" id="password" autocomplete="current-password" maxlength="72" required>
+        <div class="actions">
+          <button type="submit" id="login-button">Sign in</button>
+        </div>
+      </form>
+      <p id="login-message" class="message" role="alert"></p>
+    </section>
+
+    <section class="panel denied" id="denied-panel" aria-labelledby="denied-title" hidden>
+      <h1 id="denied-title">Access denied</h1>
+      <p>Your account is signed in but does not have access to the monitor.
+        An administrator can grant it with <code>backend/monitor_access.py</code>.</p>
+      <button type="button" id="denied-retry" class="secondary">Check again</button>
+    </section>
+
+    <div id="monitor" class="monitor-layout" hidden>
+      <section class="panel feed-panel" aria-labelledby="feed-title">
+        <div class="panel-head">
+          <h2 id="feed-title">Live camera</h2>
+          <span id="state-badge" class="state-badge" data-state="unknown">Checking...</span>
+        </div>
+        <div class="feed" id="feed">
+          <img id="feed-image" alt="Annotated live frame with detection boxes" hidden>
+          <div class="feed-overlay" id="feed-overlay">
+            <span class="spinner" id="feed-spinner" hidden></span>
+            <span id="feed-message">Monitoring is not running.</span>
+          </div>
+        </div>
+        <p class="feed-meta muted" id="feed-meta"></p>
+      </section>
+
+      <div class="side">
+        <section class="panel controls-panel" aria-labelledby="controls-title">
+          <div class="panel-head">
+            <h2 id="controls-title">Controls</h2>
+            <span id="recording-badge" class="rec-badge" hidden>REC</span>
+          </div>
+          <div class="field">
+            <label for="source-select">Source</label>
+            <select id="source-select" disabled>
+              <option value="">Loading sources...</option>
+            </select>
+          </div>
+          <label class="check" id="loop-field">
+            <input type="checkbox" id="loop-video"> Loop video until stopped
+          </label>
+          <div class="control-grid">
+            <button type="button" id="start-button" disabled>Start monitoring</button>
+            <button type="button" id="stop-button" class="secondary" disabled>Stop monitoring</button>
+            <button type="button" id="rec-start-button" class="rec" disabled>Start recording</button>
+            <button type="button" id="rec-stop-button" class="secondary" disabled>Stop recording</button>
+          </div>
+          <p class="muted small" id="shared-note">One monitoring session is shared by everyone using the monitor:
+            these controls start and stop it for all viewers.</p>
+          <p class="muted small" id="viewer-note" hidden>View only: your account can watch the monitor but not operate it.</p>
+          <dl class="status-list">
+            <div><dt>Monitoring</dt><dd id="monitoring-status">–</dd></div>
+            <div><dt>Recording</dt><dd id="recording-status">–</dd></div>
+            <div><dt>Source</dt><dd id="current-source">–</dd></div>
+            <div><dt>Session</dt><dd id="session-id" class="mono">–</dd></div>
+          </dl>
+          <p id="control-message" class="message" role="alert"></p>
+        </section>
+
+        <section class="panel stats-panel" aria-labelledby="stats-title">
+          <div class="panel-head">
+            <h2 id="stats-title">Statistics</h2>
+            <span class="muted small-inline" id="stats-scope"></span>
+          </div>
+          <div class="tiles">
+            <div class="tile"><span class="tile-value" id="stat-visible-vehicles">0</span><span class="tile-label">Vehicles in view</span></div>
+            <div class="tile"><span class="tile-value" id="stat-unique-vehicles">0</span><span class="tile-label">Unique vehicles</span></div>
+            <div class="tile"><span class="tile-value" id="stat-crossing-vehicles">0</span><span class="tile-label">Vehicle line crossings</span></div>
+            <div class="tile"><span class="tile-value" id="stat-visible-pedestrians">0</span><span class="tile-label">Pedestrians in view</span></div>
+            <div class="tile"><span class="tile-value" id="stat-unique-pedestrians">0</span><span class="tile-label">Unique pedestrians</span></div>
+            <div class="tile"><span class="tile-value" id="stat-crossing-pedestrians">0</span><span class="tile-label">Pedestrian line crossings</span></div>
+          </div>
+          <div class="table-wrap">
+            <table class="compact" id="class-table">
+              <thead>
+                <tr>
+                  <th scope="col">Class</th>
+                  <th scope="col" class="num">In view</th>
+                  <th scope="col" class="num">Unique</th>
+                  <th scope="col" class="num">Crossings</th>
+                </tr>
+              </thead>
+              <tbody id="class-body"></tbody>
+            </table>
+          </div>
+          <div id="lines-block" hidden>
+            <h3 class="sub">Crossings per counting line</h3>
+            <div class="table-wrap">
+              <table class="compact">
+                <thead>
+                  <tr>
+                    <th scope="col">Line</th>
+                    <th scope="col" class="num">A → B</th>
+                    <th scope="col" class="num">B → A</th>
+                  </tr>
+                </thead>
+                <tbody id="lines-body"></tbody>
+              </table>
+            </div>
+          </div>
+          <dl class="perf-list">
+            <div><dt>Detection FPS</dt><dd id="perf-inference-fps">–</dd></div>
+            <div><dt>Capture FPS</dt><dd id="perf-capture-fps">–</dd></div>
+            <div><dt>Processing latency</dt><dd id="perf-latency">–</dd></div>
+            <div><dt>Frames processed</dt><dd id="perf-frames">–</dd></div>
+            <div><dt>Frames dropped</dt><dd id="perf-dropped">–</dd></div>
+            <div><dt>Active tracks</dt><dd id="perf-tracks">–</dd></div>
+            <div><dt>Device</dt><dd id="perf-device">–</dd></div>
+            <div><dt>Model</dt><dd id="perf-model">–</dd></div>
+          </dl>
+          <p class="muted small">Unique counts are distinct tracked objects this session; crossings count line-crossing
+            events. Vehicles are cars, motorcycles, buses and trucks; bicycles are listed per class only.
+            Processing latency is the inference time of the last frame.</p>
+        </section>
+      </div>
+
+      <section class="panel sessions-panel" aria-labelledby="sessions-title">
+        <div class="panel-head">
+          <h2 id="sessions-title">Recent sessions</h2>
+          <button type="button" id="sessions-refresh" class="secondary">Refresh</button>
+        </div>
+        <p id="sessions-message" class="muted"></p>
+        <div class="table-wrap">
+          <table id="sessions-table">
+            <thead>
+              <tr>
+                <th scope="col">Started</th>
+                <th scope="col">Source</th>
+                <th scope="col">Status</th>
+                <th scope="col" class="num">Duration</th>
+                <th scope="col" class="num">Frames</th>
+                <th scope="col" class="num">Unique vehicles</th>
+                <th scope="col" class="num">Unique pedestrians</th>
+                <th scope="col" class="num">Vehicle crossings</th>
+                <th scope="col" class="num">Recordings</th>
+                <th scope="col">Session</th>
+              </tr>
+            </thead>
+            <tbody id="sessions-body"></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script src="js/auth.js"></script>
+  <script src="js/monitor.js"></script>
+</body>
+</html>

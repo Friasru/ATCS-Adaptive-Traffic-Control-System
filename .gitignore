@@ -1,6 +1,9 @@
 __pycache__/
 simulation/output/
 backend/venv/
+
+# Frontend test dependencies (frontend/tests)
+node_modules/
 backend/atcs.db
 
 # Virtual environments (Flask and the monitor each have their own)

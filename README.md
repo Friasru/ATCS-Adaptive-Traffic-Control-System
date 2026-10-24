@@ -104,10 +104,13 @@ Need `Authorization: Bearer <access_token>` (401 otherwise):
 | GET | /api/compare?scenario_id=N | latest completed run per controller and `improvement_vs_fixed_pct` per metric, `(fixed - controller) / fixed * 100` rounded to 0.1. Null when there is no completed fixed run or the fixed value is 0. 400 bad id, 404 unknown scenario |
 | GET | /api/runs/export.csv | all runs as CSV, optional `scenario_id` and `controller` filters, 400 on invalid filters |
 
+Monitor endpoints (`/api/monitor/status`, `sources`, `sessions`, `frame.jpg`, `start`, `stop`, `recording/start`, `recording/stop`) also need a token, and additionally a viewer (read only) or operator (control) grant given on the server with `backend/monitor_access.py`; everybody else gets 403, and registering an account grants nothing. They proxy to the local monitor service and answer 503 while it is not configured or not running. Setup, environment variables and the full behaviour are in [monitor/docs/web_service.md](monitor/docs/web_service.md).
+
 ## Tests
 
     cd backend && venv/bin/pytest
     cd simulation && ../backend/venv/bin/python -m pytest tests
+    cd monitor && .venv/bin/python -m pytest
 
 The backend tests use an in-memory database and a test-only JWT secret, need no environment variables and never start SUMO.
 

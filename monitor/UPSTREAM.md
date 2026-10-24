@@ -12,6 +12,14 @@ This folder is the ATCS Monitor desktop application, imported unchanged from its
 
 Every imported file is byte-identical to that commit. `README.md` and `docs/` are the upstream documents; their paths are relative to this folder.
 
+### Added in this repository
+
+These files are not in the upstream repository; they connect the engine to the ATCS web backend and do not change any imported file:
+
+- `web_service.py` - local HTTP service (127.0.0.1) around `MonitoringEngine`
+- `tests/test_web_service.py`
+- `docs/web_service.md` - setup, security model and API
+
 ### Not imported
 
 Packaging and installer tooling stays in the ATCS-Monitor repository, which is where the Windows installers are built:

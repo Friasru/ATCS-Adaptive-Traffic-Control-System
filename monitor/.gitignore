@@ -1,0 +1,23 @@
+# Environment
+.venv/
+.venv-win*/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Runtime data (never committed)
+models/*
+!models/.gitkeep
+recordings/*
+!recordings/.gitkeep
+exports/*
+!exports/.gitkeep
+data/*
+!data/.gitkeep
+*.sqlite3
+*.sqlite3-*
+
+# Packaging
+build/
+dist/
+*.spec.bak

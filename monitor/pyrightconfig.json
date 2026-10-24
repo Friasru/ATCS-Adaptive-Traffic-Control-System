@@ -1,0 +1,6 @@
+{
+  "venvPath": ".",
+  "venv": ".venv",
+  "exclude": [".venv", "build", "dist", "data"],
+  "reportOptionalMemberAccess": "none"
+}

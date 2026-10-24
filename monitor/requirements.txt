@@ -1,0 +1,17 @@
+# Runtime dependencies (versions verified on 2026-10-23).
+# For NVIDIA GPUs install torch/torchvision from the CUDA index first, e.g.
+#   pip install torch torchvision --index-url https://download.pytorch.org/whl/cu128
+# For CPU-only machines:
+#   pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+torch==2.11.0
+torchvision==0.26.0
+ultralytics==8.4.184
+lap==0.5.13
+# Headless OpenCV: the GUI is PySide6, and the non-headless wheel ships its own
+# Qt plugins that conflict with PySide6.
+opencv-python-headless==5.0.0.93
+PySide6-Essentials==6.12.0
+numpy==2.5.2
+psutil==7.2.2
+# Windows only: DirectShow device names for the camera list (pure Python, uses comtypes).
+pygrabber==0.2; sys_platform == "win32"

@@ -108,6 +108,8 @@ Monitor endpoints (`/api/monitor/status`, `sources`, `sessions`, `frame.jpg`, `s
 
 Desktop telemetry: a desktop ATCS Monitor registered with `venv/bin/python monitor_access.py device add <name>` sends its live status and finished sessions to `POST /api/desktop/telemetry/status`, `.../sessions/<id>/events` and `.../sessions/<id>/summary` with its device token (accepted from loopback addresses only; browser JWTs are refused there). Signed-in viewers and operators read them with `GET /api/monitor/desktop/status`, `/api/monitor/desktop/sessions` and `/api/monitor/desktop/sessions/<id>`. Device setup, credential handling, document formats and Windows-to-WSL2 connectivity are in [monitor/docs/desktop_telemetry.md](monitor/docs/desktop_telemetry.md).
 
+The desktop side (Phase 5b) is the desktop link: the original desktop app opened through `atcs-monitor://open` sends its status and finished sessions with a durable local outbox. Setup on Windows, the launcher and its security limits are in [monitor/docs/desktop_link.md](monitor/docs/desktop_link.md).
+
 ## Tests
 
     cd backend && venv/bin/pytest

@@ -11,8 +11,10 @@ locally: there is no browser, no server and no cloud upload.
 * SQLite session history with a built-in player, plus CSV/JSON export
 * A versioned JSON contract for future integration with the ATCS dashboard ([docs/integration_contract.md](docs/integration_contract.md))
 
-ATCS Monitor is independent of the main ATCS project. It does not control traffic lights and it
-does not talk to the ATCS backend.
+ATCS Monitor is independent of the main ATCS project. It does not control traffic lights, and on its
+own it does not talk to the ATCS backend. The optional desktop link (`atcs_desktop_link.pyw`, opened by
+`atcs-monitor://open`) sends counts and finished sessions to a local ATCS backend; see
+[docs/desktop_link.md](docs/desktop_link.md).
 
 ---
 
@@ -306,6 +308,7 @@ Main limitations:
 | `test_engine.py` | engine lifecycle with a scripted detector: inference failures, camera disconnect, rapid start/stop, reset, stop while recording, dropped live frames |
 | `test_real_pipeline.py` | **real YOLO** inference/tracking and the full video → detection → tracking → counting → recording → DB → export pipeline |
 | `test_gui.py` | pytest-qt: launch, controls, line dragging, settings validation, error dialogs, rapid clicks, UI responsiveness during inference, recording, history, player, export, close while recording |
+| `test_desktop_link_*.py` | desktop link: documents against the backend's validators, sender/outbox, launcher URI and duplicate launches, token storage and CLI, the main window with the link, and the real backend in a subprocess ([docs/desktop_link.md](docs/desktop_link.md#8-validation-status)) |
 
 Tests that need weights or videos are skipped, with the reason, when those files are missing.
 GUI tests use Qt's offscreen platform. Physical-camera tests (`tests/test_camera_hw.py`) are opt-in:
@@ -350,7 +353,9 @@ Extra command-line options: `--video FILE`, `--camera INDEX`, `--start`, `--reco
 
 ## Privacy
 
-* All processing is local. There are no network services, no uploads and no telemetry.
+* All processing is local. There are no network services, no uploads and no telemetry, except through the
+  optional desktop link: started with `atcs_desktop_link.pyw` and set up with a device token, it sends status,
+  counts and session results (never video) to the ATCS backend on this computer ([docs/desktop_link.md](docs/desktop_link.md)).
   Network access happens only when you explicitly download model weights. Ultralytics' optional
   usage analytics (`sync`) are switched off in the project-local settings before any model is loaded,
   and the app runs with `YOLO_OFFLINE=true`.

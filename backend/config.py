@@ -21,3 +21,11 @@ class Config:
     MONITOR_SERVICE_PORT = os.environ.get("ATCS_MONITOR_PORT", "8765")
     MONITOR_SERVICE_SECRET = os.environ.get("ATCS_MONITOR_SERVICE_SECRET")
     MONITOR_SERVICE_TIMEOUT_S = 5.0
+    # Desktop telemetry (/api/desktop/telemetry/*, monitor/docs/desktop_telemetry.md).
+    # Devices are registered with monitor_access.py; requests are accepted from
+    # loopback addresses only.
+    DESKTOP_HEARTBEAT_TIMEOUT_S = 15
+    DESKTOP_MAX_CLOCK_SKEW_S = 300
+    DESKTOP_RATE_PER_S = 5.0  # sustained requests per device
+    DESKTOP_RATE_BURST = 30
+    DESKTOP_AUTH_FAILURE_LOGS_PER_MIN = 10  # warnings about rejected credentials

@@ -106,6 +106,8 @@ Need `Authorization: Bearer <access_token>` (401 otherwise):
 
 Monitor endpoints (`/api/monitor/status`, `sources`, `sessions`, `frame.jpg`, `start`, `stop`, `recording/start`, `recording/stop`) also need a token, and additionally a viewer (read only) or operator (control) grant given on the server with `backend/monitor_access.py`; everybody else gets 403, and registering an account grants nothing. They proxy to the local monitor service and answer 503 while it is not configured or not running. Setup, environment variables and the full behaviour are in [monitor/docs/web_service.md](monitor/docs/web_service.md).
 
+Desktop telemetry: a desktop ATCS Monitor registered with `venv/bin/python monitor_access.py device add <name>` sends its live status and finished sessions to `POST /api/desktop/telemetry/status`, `.../sessions/<id>/events` and `.../sessions/<id>/summary` with its device token (accepted from loopback addresses only; browser JWTs are refused there). Signed-in viewers and operators read them with `GET /api/monitor/desktop/status`, `/api/monitor/desktop/sessions` and `/api/monitor/desktop/sessions/<id>`. Device setup, credential handling, document formats and Windows-to-WSL2 connectivity are in [monitor/docs/desktop_telemetry.md](monitor/docs/desktop_telemetry.md).
+
 ## Tests
 
     cd backend && venv/bin/pytest

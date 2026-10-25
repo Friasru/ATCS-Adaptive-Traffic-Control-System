@@ -1,0 +1,195 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  background: #f3f5f7;
+  color: #1f2933;
+  line-height: 1.55;
+}
+
+a {
+  color: #1c7ed6;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 2rem;
+  padding: 0.6rem 1.25rem;
+  background: #123b5e;
+  color: #fff;
+}
+
+.brand {
+  padding: 0.3rem 0.7rem;
+  background: #fff;
+  border-radius: 8px;
+  line-height: 0;
+}
+
+.brand img {
+  display: block;
+  height: 72px;
+  width: auto;
+}
+
+.topbar nav {
+  display: flex;
+  gap: 1.25rem;
+}
+
+.topbar nav a {
+  color: #fff;
+  opacity: 0.8;
+  text-decoration: none;
+  padding: 0.2rem 0;
+  border-bottom: 2px solid transparent;
+}
+
+.topbar nav a:hover,
+.topbar nav a[aria-current="page"] {
+  opacity: 1;
+  border-bottom-color: #fff;
+}
+
+main {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  display: grid;
+  gap: 1.25rem;
+}
+
+.hero {
+  padding: 2rem 1.5rem;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+.hero h1 {
+  margin: 0 0 0.75rem;
+  font-size: 2rem;
+  line-height: 1.2;
+}
+
+.hero p {
+  margin: 0 0 1.25rem;
+  max-width: 62ch;
+  font-size: 1.05rem;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.button {
+  display: inline-block;
+  padding: 0.6rem 1.1rem;
+  border-radius: 6px;
+  background: #1c7ed6;
+  color: #fff;
+  text-decoration: none;
+}
+
+.button:hover {
+  background: #1971c2;
+}
+
+.button.secondary {
+  background: #fff;
+  color: #1c7ed6;
+  border: 1px solid #1c7ed6;
+}
+
+.button.secondary:hover {
+  background: #e7f1fb;
+}
+
+.panel {
+  padding: 1.25rem 1.5rem;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+.panel h2 {
+  margin-top: 0;
+  font-size: 1.25rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.9rem;
+}
+
+.tile {
+  padding: 0.9rem 1rem;
+  background: #e7f1fb;
+  border-radius: 8px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.tile h3 {
+  margin: 0 0 0.35rem;
+  font-size: 1.05rem;
+}
+
+.tile p {
+  margin: 0;
+  font-size: 0.92rem;
+  color: #3e4c59;
+}
+
+a.tile:hover {
+  background: #d3e6f8;
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+th,
+td {
+  text-align: left;
+  padding: 0.5rem 0.6rem;
+  border-bottom: 1px solid #e4e7eb;
+}
+
+th {
+  background: #f3f5f7;
+}
+
+.note {
+  margin-bottom: 0;
+  color: #52606d;
+  font-size: 0.92rem;
+}
+
+footer {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 1.5rem 2rem;
+  color: #52606d;
+  font-size: 0.85rem;
+}
+
+@media (max-width: 600px) {
+  .hero h1 {
+    font-size: 1.6rem;
+  }
+}

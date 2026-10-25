@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ATCS - Adaptive Traffic Control System</title>
+  <link rel="stylesheet" href="css/home.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="index.html"><img src="img/logo.svg" alt="ATCS - Adaptive Traffic Control System"></a>
+    <nav>
+      <a href="index.html" aria-current="page">Home</a>
+      <a href="scenarios.html">Scenarios</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="monitor.html">Monitor</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <h1>Traffic lights that adapt to the traffic in front of them</h1>
+      <p>Most traffic lights run on a fixed timer and give every road the same green time, even when one road is empty. ATCS reads the queues at an intersection and gives green to the side that needs it, to reduce the time drivers spend waiting and ease traffic jams.</p>
+      <div class="actions">
+        <a class="button" href="scenarios.html">Run a simulation</a>
+        <a class="button secondary" href="dashboard.html">Compare results</a>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>The problem</h2>
+      <p>At a fixed-timer light, cars wait at a red while the crossing road has a green and no traffic. That idle green time is wasted waiting for everyone, and at busy hours it adds to congestion. Fixing it means the light has to react to what is actually happening on the road.</p>
+    </section>
+
+    <section class="panel">
+      <h2>Our approach</h2>
+      <div class="grid">
+        <div class="tile">
+          <h3>Simulate</h3>
+          <p>A four-way intersection runs in <a href="https://sumo.dlr.de" target="_blank" rel="noopener noreferrer">SUMO</a>, an open-source traffic simulator used in research, with the same traffic for every test.</p>
+        </div>
+        <div class="tile">
+          <h3>Adapt</h3>
+          <p>A rule-based controller reads the queues every simulated second and switches the light, within minimum and maximum green times so it stays safe and fair.</p>
+        </div>
+        <div class="tile">
+          <h3>Measure</h3>
+          <p>Each run reports average wait, time lost and worst-case wait. We compare controllers against the fixed timer and check the result on traffic that was not used for tuning.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Results so far</h2>
+      <p>Average wait per vehicle in seconds. Simulated results in SUMO, one simulated hour per scenario.</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Scenario (east-west / north-south vehicles per hour)</th>
+              <th>Fixed timer</th>
+              <th>Adaptive</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Uneven (500 / 200)</td><td>13.39</td><td>6.07</td></tr>
+            <tr><td>Balanced (300 / 300)</td><td>13.37</td><td>6.21</td></tr>
+            <tr><td>Held-out (200 / 600)</td><td>14.80</td><td>6.01</td></tr>
+            <tr><td>Rush hour (900 / 700)</td><td>18.06</td><td>18.26</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="note">The adaptive controller cuts waiting by roughly half when traffic is uneven or light. In saturated rush-hour traffic, when both roads are busy, a fixed timer does about as well.</p>
+    </section>
+
+    <section class="panel">
+      <h2>Explore the project</h2>
+      <div class="grid">
+        <a class="tile link" href="scenarios.html">
+          <h3>Scenarios</h3>
+          <p>Create a traffic scenario, run the controllers on it and see the results.</p>
+        </a>
+        <a class="tile link" href="dashboard.html">
+          <h3>Dashboard</h3>
+          <p>Compare controllers with charts and export the data. Sign-in required.</p>
+        </a>
+        <a class="tile link" href="monitor.html">
+          <h3>Monitor</h3>
+          <p>A computer-vision app that counts vehicles and pedestrians in video. Sign-in required.</p>
+        </a>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Built with</h2>
+      <p>SUMO and TraCI for the simulation, Python and Flask with SQLAlchemy for the API, JSON Web Tokens for sign-in, and plain HTML, CSS and JavaScript for the pages. The Monitor uses YOLO object detection.</p>
+      <p>Code on <a href="https://github.com/Friasru/ATCS-Adaptive-Traffic-Control-System" target="_blank" rel="noopener noreferrer">GitHub</a>.</p>
+    </section>
+
+    <section class="panel">
+      <h2>Team</h2>
+      <p>Ian Aviles and Alberto Frias</p>
+    </section>
+  </main>
+
+  <footer>
+    <p>Test videos for the Monitor: Intel IoT DevKit sample videos (CC BY 4.0) and an Ultralytics demo clip. Attribution details are in the repository.</p>
+  </footer>
+</body>
+</html>

@@ -16,7 +16,8 @@ browser ──atcs-monitor://open──> Windows ──> pythonw atcs_desktop_li
                                    outbox.sqlite3 (finished sessions until acknowledged)
 ```
 
-The web page's **Open Desktop Monitor** button is Phase 5c; this phase provides everything behind it.
+The web page's **Open Desktop Monitor** button and the desktop dashboard are Phase 5c (section 9); this phase
+provides everything behind them.
 
 ## 1. Two ways to run the app
 
@@ -221,4 +222,75 @@ To stop linking without uninstalling: `python -m app.desktop_link disable` (and 
 | Windows: URI rejection through `atcs_desktop_link.pyw`, named-mutex single instance (including release after the holder is killed), detection of a running ATCS Monitor, DPAPI token storage, `setup`/`check` CLI, live heartbeat and session upload from Windows to Flask in WSL2 (default NAT mode, `127.0.0.1`) | Windows-native, with Windows Python 3.14 (standard library only, no PySide6) on 2026-10-24 |
 | Windows, linked GUI: `atcs_desktop_link.pyw` started directly (no URI) in `.venv-win` (Python 3.14, PySide6 6.12, CUDA PyTorch); standalone without configuration, `ATCS: connected` with it; idle and live status; a completed video-file session with recording (CUDA) persisted by Flask in WSL2 and kept after a Flask restart; a second launch raising the running window; the Phase 5b tests | Windows-native, 2026-10-24, with a development data folder and a separate development backend database; camera probing was disabled for these runs, so no camera was opened |
 | `install_uri_handler.ps1` / `uninstall_uri_handler.ps1` | Windows-native **dry runs** only: refusal of a `\\wsl.localhost` checkout, of a missing or wrong interpreter, generated command, nothing written |
-| Registry installation, browser prompt and click-through, the window coming to the front while another program has the focus, a physical webcam session through the link | **not yet tested** (needs the registry change, step 3, and a webcam session started by hand) |
+| Registry installation, browser prompt and click-through, the window coming to the front while another program has the focus, a physical webcam session through the link | registry installation and `atcs-monitor://open` verified by hand on Windows; browser click-through from the Monitor page: see section 9; physical webcam: Phase 5d |
+
+## 9. Web Monitor page (Phase 5c)
+
+`frontend/monitor.html` with `js/monitor-desktop.js` (desktop part) and `js/monitor.js` (sign-in, access,
+legacy panel). It uses only the read-only browser endpoints of
+[desktop_telemetry.md](desktop_telemetry.md#browser-endpoints-read-only) with the user's JWT and a viewer or
+operator grant. No endpoint was added. The device token never reaches the browser, and the page never calls
+`/api/desktop/telemetry/*`.
+
+**Open Desktop Monitor** is a plain link to the fixed URI `atcs-monitor://open`. The browser opens it only on a
+real click or Enter key (script-generated clicks are ignored), never on page load. It opens the app on the
+computer running the browser, which may not be the Flask server. Opening the link proves nothing, so the page
+shows *Waiting for desktop connection* until the server receives a heartbeat from some desktop **after** the
+click (server clock). After 30 s without one it shows troubleshooting guidance and keeps watching.
+
+**Connection.** A desktop is *Connected* while its last heartbeat reached the server less than
+`heartbeat_timeout_s` (15 s) ago. The page adds the time since its last status answer, so a heartbeat that
+expires between two polls is already shown as *Disconnected*. If the server itself stops answering for 15 s, the
+state is *Unknown*, never a stale *Connected*. The app sends a heartbeat every second while monitoring and every
+10 s when idle, so closing it shows *Disconnected* about 15 s later. Status is polled every 2 s while a desktop is
+live, every 5 s otherwise, every 1.5 s while waiting after the click, and every 15 s in a hidden tab.
+
+**Unknown is not zero.** The backend fills zeros for a device with no report or no session. The page shows `–`
+for those, for in-view counts, FPS and active tracks of a desktop that is not reporting, and for fields missing
+from an answer. A real `0` is shown as `0`. Unique counts are distinct tracked objects, crossings are line
+crossing events, and in-view counts are the current frame only.
+
+**Sessions** come from the Flask database (newest first, 50, optional desktop filter with `?device=`). They stay
+after the desktop is closed and after a reload. A failed reload keeps the list that was shown. The *Statistics*
+column follows `counts_origin`:
+
+| Shown | When | Unique counts, duration, frames |
+|---|---|---|
+| Live, in progress | `running` and `live` | live values; duration in progress |
+| Pending | `running`, desktop not reporting | last live values; the summary arrives when the desktop reconnects |
+| Complete | `summary` | from the summary |
+| Incomplete: last live update | `last_live_update` | last live values; duration unknown |
+| Incomplete: not saved | `incomplete` | unknown (`–`) |
+
+Crossing totals are always shown: they match the stored events. Times are the desktop's timestamps (with their
+offset) shown in the browser's local time zone. *Details* opens the detail endpoint: model, app version (known
+only for sessions seen live), per-class counts, counting lines and the recording file names. Videos stay on the
+desktop, so there are no playback or download links.
+
+**Legacy panel.** The Phase 4 server-side monitor is a collapsed "Server-side Monitor — Legacy" panel. One
+`GET /api/monitor/status` on load gives its summary state (*Not configured*, *Unavailable*, *Available*,
+*Running*). Status and frames are polled only while the panel is open. Its controls are hidden while the service
+is not configured or not answering, and viewer/operator rules are unchanged. While a desktop reports a camera
+session, the page does not start a server camera. This check is made by the page only, not enforced by the
+server.
+
+**Tests.** `cd frontend/tests && npm test` runs the Playwright suite against `mock-server.mjs`, which serves
+`fixtures/desktop-payloads.json`, real backend output from `backend/tests/desktop_dashboard_fixture.py`
+(`backend/tests/test_desktop_dashboard_contract.py` fails if the read views change shape). The real-backend
+check of 2026-10-24 ran the real Flask app (monitor/tests/backend_harness.py, temporary database), Chromium, a
+real JWT sign-in, real device-token heartbeats, live counts, a stored summary, reload persistence, and
+*Disconnected* 14 s after the last heartbeat.
+
+**Manual check on Windows** (headless Chromium has no `atcs-monitor:` handler, so a test can only see that the
+browser was asked to open the URI):
+
+1. Start Flask in WSL and open `http://127.0.0.1:5000/monitor.html` in the Windows browser. Sign in with an
+   account that has a viewer or operator grant.
+2. Press **Open Desktop Monitor**. Accept the browser prompt. The desktop window opens, or comes to the front if
+   it is already running. Within ~10 s the page changes from *Waiting for desktop connection* to *Connected*.
+3. In the desktop app, open a test video and press **Start**. The page shows *Monitoring* and live counts. Start
+   and stop recording in the app: *REC* appears and disappears.
+4. Press **Stop**. The session appears in *Desktop sessions* as *Complete*, and *Details* shows its counts and
+   the recording name. Reload the page: it is still there.
+5. Close the desktop app. About 15 s later the page shows *Disconnected* and the session stays listed.
+6. Close the browser while the desktop monitors a video: the desktop keeps running and its session is stored.

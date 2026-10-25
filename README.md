@@ -110,13 +110,18 @@ Desktop telemetry: a desktop ATCS Monitor registered with `venv/bin/python monit
 
 The desktop side (Phase 5b) is the desktop link: the original desktop app opened through `atcs-monitor://open` sends its status and finished sessions with a durable local outbox. Setup on Windows, the launcher and its security limits are in [monitor/docs/desktop_link.md](monitor/docs/desktop_link.md).
 
+The Monitor page (Phase 5c) is desktop-first: **Open Desktop Monitor** opens the desktop app on the computer running the browser (only on a click), and the page shows the connection, live counts and the stored desktop sessions from the three read-only endpoints above. The Phase 4 server-side monitor is kept as a collapsed "Server-side Monitor — Legacy" panel whose controls appear only while that service answers. Behaviour and manual checks: [monitor/docs/desktop_link.md, section 9](monitor/docs/desktop_link.md#9-web-monitor-page-phase-5c).
+
 ## Tests
 
     cd backend && venv/bin/pytest
     cd simulation && ../backend/venv/bin/python -m pytest tests
     cd monitor && .venv/bin/python -m pytest
+    cd frontend/tests && npm install && npm test
 
 The backend tests use an in-memory database and a test-only JWT secret, need no environment variables and never start SUMO.
+
+The frontend tests drive the Scenarios, Dashboard and Monitor pages in headless Chromium (Playwright) against a local mock of the API; the desktop payloads they use are real backend output, checked by `backend/tests/test_desktop_dashboard_contract.py`.
 
 The simulation tests include a few real SUMO runs that check the adaptive controller against the fixed timer, and skip themselves if SUMO is not installed.
 

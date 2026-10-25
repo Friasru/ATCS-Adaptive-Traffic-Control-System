@@ -5,6 +5,252 @@
   max-width: 1280px;
 }
 
+.monitor-main {
+  display: grid;
+  gap: 1rem;
+}
+
+/* Layout rules below set display on elements that are also hidden at times. */
+.monitor-page [hidden] {
+  display: none !important;
+}
+
+.monitor-main > * {
+  min-width: 0;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Keeps absolutely positioned .sr-only text inside its scrolling table. */
+.monitor-page .table-wrap {
+  position: relative;
+}
+
+/* ---------- desktop monitor ---------- */
+
+.desk-launch > p {
+  margin: 0 0 0.9rem;
+  max-width: 70ch;
+}
+
+.badges {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.launch-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.launch-note {
+  flex: 1 1 22rem;
+  margin: 0;
+  max-width: 62ch;
+}
+
+a.button-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.9rem;
+  padding: 0.6rem 1.4rem;
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 600;
+  font-size: 1rem;
+  text-decoration: none;
+}
+
+a.button-link:hover {
+  background: var(--accent-hover);
+}
+
+.desk-launch .message:empty {
+  display: none;
+}
+
+#desk-launch-message[data-state="connected"] {
+  color: var(--good);
+}
+
+.desk-help {
+  margin-top: 0.9rem;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: #f7f8fa;
+  font-size: 0.88rem;
+}
+
+.desk-help .sub {
+  margin-top: 0;
+}
+
+.desk-help ul {
+  margin: 0;
+  padding-left: 1.1rem;
+  display: grid;
+  gap: 0.4rem;
+}
+
+.desk-layout {
+  display: grid;
+  grid-template-columns: minmax(280px, 1fr) minmax(0, 1.4fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+.desk-layout > * {
+  min-width: 0;
+}
+
+.desk-connection-panel .status-list {
+  margin-top: 0;
+}
+
+.desk-connection-panel .message:empty,
+.desk-detail .message:empty {
+  display: none;
+}
+
+.inline-field {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+.inline-field label {
+  font-size: 0.85rem;
+}
+
+.inline-field select {
+  max-width: 14rem;
+}
+
+.toolbar-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+button.small-button {
+  padding: 0.2rem 0.6rem;
+  font-size: 0.85rem;
+}
+
+.stats-cell {
+  font-size: 0.85rem;
+}
+
+.stats-cell[data-kind="complete"] {
+  color: var(--good);
+}
+
+.stats-cell[data-kind="partial"],
+.stats-cell[data-kind="incomplete"],
+.stats-cell[data-kind="pending"] {
+  color: #8a5a00;
+}
+
+.desk-detail {
+  margin-top: 1rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--border);
+}
+
+.desk-detail h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.desk-detail h3:focus {
+  outline: none;
+}
+
+.desk-detail h3:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.detail-list {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 1.5rem;
+  margin-bottom: 0.9rem;
+}
+
+.detail-list > div {
+  grid-template-columns: 10rem minmax(0, 1fr);
+}
+
+.desk-detail table.compact {
+  max-width: 32rem;
+}
+
+tr.total-row td {
+  font-weight: 600;
+}
+
+h4.sub {
+  margin: 0.9rem 0 0.4rem;
+  font-size: 0.9rem;
+}
+
+.plain-list {
+  margin: 0;
+  padding-left: 1.1rem;
+  font-size: 0.88rem;
+}
+
+/* ---------- legacy (server-side) monitor ---------- */
+
+details.legacy > summary {
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1.05rem;
+  padding: 0.1rem 0;
+}
+
+details.legacy > summary .small-inline {
+  font-weight: 400;
+  margin-left: 0.4rem;
+}
+
+details.legacy[open] > summary {
+  margin-bottom: 0.4rem;
+}
+
+details.legacy > p.small {
+  margin: 0 0 0.9rem;
+}
+
+#legacy-note {
+  margin: 0 0 0.9rem;
+}
+
+/* Panels inside the legacy panel: no second frame around them. */
+.legacy .monitor-layout > .panel,
+.legacy .side > .panel {
+  border-color: #e4e7eb;
+}
+
 .monitor-layout {
   display: grid;
   grid-template-columns: minmax(0, 1.7fr) minmax(300px, 1fr);
@@ -177,6 +423,20 @@ code,
 .state-badge[data-state="unavailable"] {
   background: #ffe3e3;
   color: var(--bad);
+}
+
+.state-badge[data-state="connected"] {
+  background: #d3f9d8;
+  color: var(--good);
+}
+
+.state-badge[data-state="disconnected"] {
+  background: #ffe3e3;
+  color: var(--bad);
+}
+
+.state-badge[hidden] {
+  display: none;
 }
 
 .rec-badge {
@@ -390,9 +650,23 @@ td.wrap {
   color: var(--bad);
 }
 
+.session-status[data-status="live"] {
+  color: var(--good);
+  font-weight: 600;
+}
+
+.session-status[data-status="pending"] {
+  color: #8a5a00;
+}
+
 /* ---------- small screens ---------- */
 
 @media (max-width: 960px) {
+  .desk-layout,
+  .detail-list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
   .monitor-layout {
     grid-template-columns: minmax(0, 1fr);
     grid-template-areas:
@@ -405,6 +679,19 @@ td.wrap {
 @media (max-width: 480px) {
   .tiles {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  a.button-link {
+    width: 100%;
+  }
+
+  .detail-list > div,
+  .status-list > div {
+    grid-template-columns: 7rem minmax(0, 1fr);
+  }
+
+  .inline-field select {
+    max-width: 10rem;
   }
 
   .perf-list {

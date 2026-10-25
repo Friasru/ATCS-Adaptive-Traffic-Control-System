@@ -1,0 +1,733 @@
+{
+  "detail_completed": {
+    "avg_inference_fps": 10.2,
+    "counts_origin": "summary",
+    "crossing_event_count": 16,
+    "crossings": {
+      "bicycle": 1,
+      "bus": 1,
+      "car": 9,
+      "motorcycle": 1,
+      "person": 2,
+      "truck": 2
+    },
+    "device": "alberto-windows",
+    "duration_s": 42.5,
+    "ended_at": "2026-10-24T23:27:38.122+00:00",
+    "finalized": true,
+    "finalized_at": "2026-10-24T23:27:38.123+00:00",
+    "first_received_at": "2026-10-24T23:27:38.117+00:00",
+    "frames_processed": 1830,
+    "last_received_at": "2026-10-24T23:27:38.123+00:00",
+    "line_totals": {
+      "line-1": {
+        "a_to_b": {
+          "bicycle": 0,
+          "bus": 0,
+          "car": 5,
+          "motorcycle": 0,
+          "person": 0,
+          "truck": 0
+        },
+        "b_to_a": {
+          "bicycle": 0,
+          "bus": 0,
+          "car": 0,
+          "motorcycle": 0,
+          "person": 2,
+          "truck": 0
+        }
+      }
+    },
+    "live": false,
+    "model": {
+      "device": "cuda:0",
+      "name": "yolo26n.pt",
+      "version": "yolo26n.pt sha256:9b09cc8bf347 ultralytics 8.4.184"
+    },
+    "provenance": {
+      "app_version": null,
+      "device": "alberto-windows",
+      "instance_id": null,
+      "live_timestamp": null
+    },
+    "recordings": [
+      {
+        "codec": "avc1",
+        "duration_s": 40.1,
+        "file": "atcs_20261023-120000_3f1c0d6e.mp4",
+        "ok": true
+      }
+    ],
+    "session_id": "5cfbe3571fe744f5894ba660974ef126",
+    "source_id": "car-detection.mp4",
+    "source_type": "video_file",
+    "started_at": "2026-10-24T22:57:38.115+00:00",
+    "status": "completed",
+    "totals": {
+      "crossing_pedestrians": 2,
+      "crossing_vehicles": 13,
+      "unique_pedestrians": 7,
+      "unique_vehicles": 26
+    },
+    "unique": {
+      "bicycle": 2,
+      "bus": 2,
+      "car": 20,
+      "motorcycle": 1,
+      "person": 7,
+      "truck": 3
+    }
+  },
+  "detail_error": {
+    "avg_inference_fps": null,
+    "counts_origin": "last_live_update",
+    "crossing_event_count": 0,
+    "crossings": {
+      "bicycle": 0,
+      "bus": 0,
+      "car": 0,
+      "motorcycle": 0,
+      "person": 0,
+      "truck": 0
+    },
+    "device": "lab-pc",
+    "duration_s": 0.0,
+    "ended_at": "2026-10-24T23:27:38.129+00:00",
+    "finalized": true,
+    "finalized_at": "2026-10-24T23:27:38.129+00:00",
+    "first_received_at": "2026-10-24T23:27:38.127+00:00",
+    "frames_processed": 240,
+    "last_received_at": "2026-10-24T23:27:38.129+00:00",
+    "line_totals": {
+      "line-1": {
+        "a_to_b": {
+          "bicycle": 0,
+          "bus": 0,
+          "car": 0,
+          "motorcycle": 0,
+          "person": 0,
+          "truck": 0
+        },
+        "b_to_a": {
+          "bicycle": 0,
+          "bus": 0,
+          "car": 0,
+          "motorcycle": 0,
+          "person": 0,
+          "truck": 0
+        }
+      }
+    },
+    "live": false,
+    "model": {
+      "device": "cuda:0",
+      "name": "yolo26n.pt",
+      "version": "yolo26n.pt sha256:9b09cc8bf347 ultralytics 8.4.184"
+    },
+    "provenance": {
+      "app_version": "1.0.0",
+      "device": "lab-pc",
+      "instance_id": "33cccfaadcd3434593b5151a82b71f10",
+      "live_timestamp": "2026-10-24T21:32:38.126+00:00"
+    },
+    "recordings": [],
+    "session_id": "96a4f613c6474e56bc439a5a7a1b04db",
+    "source_id": "Integrated Camera",
+    "source_type": "camera",
+    "started_at": "2026-10-24T21:27:38.126+00:00",
+    "status": "error",
+    "totals": {
+      "crossing_pedestrians": 0,
+      "crossing_vehicles": 0,
+      "unique_pedestrians": 1,
+      "unique_vehicles": 4
+    },
+    "unique": {
+      "bicycle": 0,
+      "bus": 0,
+      "car": 4,
+      "motorcycle": 0,
+      "person": 1,
+      "truck": 0
+    }
+  },
+  "detail_interrupted": {
+    "avg_inference_fps": null,
+    "counts_origin": "incomplete",
+    "crossing_event_count": 0,
+    "crossings": {
+      "bicycle": 0,
+      "bus": 0,
+      "car": 0,
+      "motorcycle": 0,
+      "person": 0,
+      "truck": 0
+    },
+    "device": "lab-pc",
+    "duration_s": 0.0,
+    "ended_at": "2026-10-24T23:27:38.125+00:00",
+    "finalized": true,
+    "finalized_at": "2026-10-24T23:27:38.125+00:00",
+    "first_received_at": "2026-10-24T23:27:38.125+00:00",
+    "frames_processed": 0,
+    "last_received_at": "2026-10-24T23:27:38.125+00:00",
+    "line_totals": {
+      "line-1": {
+        "a_to_b": {
+          "bicycle": 0,
+          "bus": 0,
+          "car": 0,
+          "motorcycle": 0,
+          "person": 0,
+          "truck": 0
+        },
+        "b_to_a": {
+          "bicycle": 0,
+          "bus": 0,
+          "car": 0,
+          "motorcycle": 0,
+          "person": 0,
+          "truck": 0
+        }
+      }
+    },
+    "live": false,
+    "model": {
+      "device": "cuda:0",
+      "name": "yolo26n.pt",
+      "version": "yolo26n.pt sha256:9b09cc8bf347 ultralytics 8.4.184"
+    },
+    "provenance": {
+      "app_version": null,
+      "device": "lab-pc",
+      "instance_id": null,
+      "live_timestamp": null
+    },
+    "recordings": [],
+    "session_id": "e67d75a8a10b4e36b5d2b665c3c989d7",
+    "source_id": "Integrated Camera",
+    "source_type": "camera",
+    "started_at": "2026-10-24T20:27:38.125+00:00",
+    "status": "interrupted",
+    "totals": {
+      "crossing_pedestrians": 0,
+      "crossing_vehicles": 0,
+      "unique_pedestrians": 0,
+      "unique_vehicles": 0
+    },
+    "unique": {
+      "bicycle": 0,
+      "bus": 0,
+      "car": 0,
+      "motorcycle": 0,
+      "person": 0,
+      "truck": 0
+    }
+  },
+  "detail_running": {
+    "avg_inference_fps": null,
+    "counts_origin": "live",
+    "crossing_event_count": null,
+    "crossings": {
+      "bicycle": 0,
+      "bus": 0,
+      "car": 6,
+      "motorcycle": 0,
+      "person": 1,
+      "truck": 1
+    },
+    "device": "alberto-windows",
+    "duration_s": null,
+    "ended_at": null,
+    "finalized": false,
+    "finalized_at": null,
+    "first_received_at": "2026-10-24T23:27:38.132+00:00",
+    "frames_processed": 1500,
+    "last_received_at": "2026-10-24T23:27:38.132+00:00",
+    "line_totals": {
+      "line-1": {
+        "a_to_b": {
+          "bicycle": 0,
+          "bus": 0,
+          "car": 4,
+          "motorcycle": 0,
+          "person": 0,
+          "truck": 0
+        },
+        "b_to_a": {
+          "bicycle": 0,
+          "bus": 0,
+          "car": 0,
+          "motorcycle": 0,
+          "person": 1,
+          "truck": 0
+        }
+      }
+    },
+    "live": true,
+    "model": null,
+    "provenance": {
+      "app_version": "1.0.0",
+      "device": "alberto-windows",
+      "instance_id": "16ff1bab59564cef901fb01fb4aa35de",
+      "live_timestamp": "2026-10-24T23:27:38.131+00:00"
+    },
+    "recordings": [],
+    "session_id": "6bde48e4fd8e47c8847f8437c09aa6ed",
+    "source_id": "Integrated Camera",
+    "source_type": "camera",
+    "started_at": "2026-10-24T23:25:38.131+00:00",
+    "status": "running",
+    "totals": {
+      "crossing_pedestrians": 1,
+      "crossing_vehicles": 7,
+      "unique_pedestrians": 4,
+      "unique_vehicles": 15
+    },
+    "unique": {
+      "bicycle": 1,
+      "bus": 1,
+      "car": 11,
+      "motorcycle": 1,
+      "person": 4,
+      "truck": 2
+    }
+  },
+  "device_idle": {
+    "camera_status": "none",
+    "classes": [
+      "person",
+      "car",
+      "motorcycle",
+      "bicycle",
+      "bus",
+      "truck"
+    ],
+    "crossings": {
+      "bicycle": 0,
+      "bus": 0,
+      "car": 0,
+      "motorcycle": 0,
+      "person": 0,
+      "truck": 0
+    },
+    "desktop": {
+      "app": {
+        "name": "ATCS Monitor",
+        "version": "1.0.0"
+      },
+      "connection": "connected",
+      "desktop_sent_at": "2026-10-24T23:27:38.130+00:00",
+      "last_seen_at": "2026-10-24T23:27:38.131+00:00",
+      "name": "lab-pc",
+      "seconds_since_seen": 0.0
+    },
+    "device": "cuda:0",
+    "last_error": null,
+    "line_totals": {},
+    "live": true,
+    "message": "Stopped",
+    "performance": {
+      "active_tracks": 3,
+      "capture_fps": 29.8,
+      "frames_dropped": 0,
+      "frames_processed": 0,
+      "inference_fps": 10.4,
+      "latency_ms": 11.2,
+      "recording_fps": 0.0,
+      "recording_frames_dropped": 0
+    },
+    "recording": {
+      "active": false,
+      "file": null
+    },
+    "running": false,
+    "session_id": null,
+    "session_started_at": null,
+    "source": null,
+    "state": "Idle",
+    "totals": {
+      "crossing_pedestrians": 0,
+      "crossing_vehicles": 0,
+      "unique_pedestrians": 0,
+      "unique_vehicles": 0,
+      "visible_pedestrians": 0,
+      "visible_vehicles": 0
+    },
+    "unique": {
+      "bicycle": 0,
+      "bus": 0,
+      "car": 0,
+      "motorcycle": 0,
+      "person": 0,
+      "truck": 0
+    },
+    "vehicle_classes": [
+      "car",
+      "motorcycle",
+      "bus",
+      "truck"
+    ],
+    "visible": {
+      "bicycle": 0,
+      "bus": 0,
+      "car": 0,
+      "motorcycle": 0,
+      "person": 0,
+      "truck": 0
+    }
+  },
+  "device_never": {
+    "camera_status": null,
+    "classes": [
+      "person",
+      "car",
+      "motorcycle",
+      "bicycle",
+      "bus",
+      "truck"
+    ],
+    "crossings": {
+      "bicycle": 0,
+      "bus": 0,
+      "car": 0,
+      "motorcycle": 0,
+      "person": 0,
+      "truck": 0
+    },
+    "desktop": {
+      "app": null,
+      "connection": "never_connected",
+      "desktop_sent_at": null,
+      "last_seen_at": null,
+      "name": "spare-laptop",
+      "seconds_since_seen": null
+    },
+    "device": null,
+    "last_error": null,
+    "line_totals": {},
+    "live": false,
+    "message": null,
+    "performance": {
+      "active_tracks": 0,
+      "capture_fps": 0,
+      "frames_dropped": 0,
+      "frames_processed": 0,
+      "inference_fps": 0,
+      "latency_ms": 0,
+      "recording_fps": 0,
+      "recording_frames_dropped": 0
+    },
+    "recording": {
+      "active": false,
+      "file": null
+    },
+    "running": false,
+    "session_id": null,
+    "session_started_at": null,
+    "source": null,
+    "state": null,
+    "totals": {
+      "crossing_pedestrians": 0,
+      "crossing_vehicles": 0,
+      "unique_pedestrians": 0,
+      "unique_vehicles": 0,
+      "visible_pedestrians": 0,
+      "visible_vehicles": 0
+    },
+    "unique": {
+      "bicycle": 0,
+      "bus": 0,
+      "car": 0,
+      "motorcycle": 0,
+      "person": 0,
+      "truck": 0
+    },
+    "vehicle_classes": [
+      "car",
+      "motorcycle",
+      "bus",
+      "truck"
+    ],
+    "visible": {
+      "bicycle": 0,
+      "bus": 0,
+      "car": 0,
+      "motorcycle": 0,
+      "person": 0,
+      "truck": 0
+    }
+  },
+  "device_recording": {
+    "camera_status": "ok",
+    "classes": [
+      "person",
+      "car",
+      "motorcycle",
+      "bicycle",
+      "bus",
+      "truck"
+    ],
+    "crossings": {
+      "bicycle": 0,
+      "bus": 0,
+      "car": 6,
+      "motorcycle": 0,
+      "person": 1,
+      "truck": 1
+    },
+    "desktop": {
+      "app": {
+        "name": "ATCS Monitor",
+        "version": "1.0.0"
+      },
+      "connection": "connected",
+      "desktop_sent_at": "2026-10-24T23:27:38.131+00:00",
+      "last_seen_at": "2026-10-24T23:27:38.132+00:00",
+      "name": "alberto-windows",
+      "seconds_since_seen": 0.0
+    },
+    "device": "cuda:0",
+    "last_error": null,
+    "line_totals": {
+      "line-1": {
+        "a_to_b": {
+          "bicycle": 0,
+          "bus": 0,
+          "car": 4,
+          "motorcycle": 0,
+          "person": 0,
+          "truck": 0
+        },
+        "b_to_a": {
+          "bicycle": 0,
+          "bus": 0,
+          "car": 0,
+          "motorcycle": 0,
+          "person": 1,
+          "truck": 0
+        }
+      }
+    },
+    "live": true,
+    "message": "Detecting on camera:0 (cuda:0, 960 px)",
+    "performance": {
+      "active_tracks": 3,
+      "capture_fps": 29.8,
+      "frames_dropped": 0,
+      "frames_processed": 1500,
+      "inference_fps": 10.4,
+      "latency_ms": 11.2,
+      "recording_fps": 0.0,
+      "recording_frames_dropped": 0
+    },
+    "recording": {
+      "active": true,
+      "file": "atcs_20261024-191500_5d2e9a41.mp4"
+    },
+    "running": true,
+    "session_id": "6bde48e4fd8e47c8847f8437c09aa6ed",
+    "session_started_at": "2026-10-24T23:25:38.131+00:00",
+    "source": {
+      "kind": "camera",
+      "label": "Integrated Camera"
+    },
+    "state": "Recording",
+    "totals": {
+      "crossing_pedestrians": 1,
+      "crossing_vehicles": 7,
+      "unique_pedestrians": 4,
+      "unique_vehicles": 15,
+      "visible_pedestrians": 1,
+      "visible_vehicles": 4
+    },
+    "unique": {
+      "bicycle": 1,
+      "bus": 1,
+      "car": 11,
+      "motorcycle": 1,
+      "person": 4,
+      "truck": 2
+    },
+    "vehicle_classes": [
+      "car",
+      "motorcycle",
+      "bus",
+      "truck"
+    ],
+    "visible": {
+      "bicycle": 0,
+      "bus": 1,
+      "car": 3,
+      "motorcycle": 0,
+      "person": 1,
+      "truck": 0
+    }
+  },
+  "heartbeat_timeout_s": 15,
+  "session_completed": {
+    "avg_inference_fps": 10.2,
+    "counts_origin": "summary",
+    "crossings": {
+      "bicycle": 1,
+      "bus": 1,
+      "car": 9,
+      "motorcycle": 1,
+      "person": 2,
+      "truck": 2
+    },
+    "device": "alberto-windows",
+    "duration_s": 42.5,
+    "ended_at": "2026-10-24T23:27:38.122+00:00",
+    "finalized": true,
+    "finalized_at": "2026-10-24T23:27:38.123+00:00",
+    "first_received_at": "2026-10-24T23:27:38.117+00:00",
+    "frames_processed": 1830,
+    "last_received_at": "2026-10-24T23:27:38.123+00:00",
+    "live": false,
+    "recordings": 1,
+    "session_id": "5cfbe3571fe744f5894ba660974ef126",
+    "source_id": "car-detection.mp4",
+    "source_type": "video_file",
+    "started_at": "2026-10-24T22:57:38.115+00:00",
+    "status": "completed",
+    "totals": {
+      "crossing_pedestrians": 2,
+      "crossing_vehicles": 13,
+      "unique_pedestrians": 7,
+      "unique_vehicles": 26
+    },
+    "unique": {
+      "bicycle": 2,
+      "bus": 2,
+      "car": 20,
+      "motorcycle": 1,
+      "person": 7,
+      "truck": 3
+    }
+  },
+  "session_error": {
+    "avg_inference_fps": null,
+    "counts_origin": "last_live_update",
+    "crossings": {
+      "bicycle": 0,
+      "bus": 0,
+      "car": 0,
+      "motorcycle": 0,
+      "person": 0,
+      "truck": 0
+    },
+    "device": "lab-pc",
+    "duration_s": 0.0,
+    "ended_at": "2026-10-24T23:27:38.129+00:00",
+    "finalized": true,
+    "finalized_at": "2026-10-24T23:27:38.129+00:00",
+    "first_received_at": "2026-10-24T23:27:38.127+00:00",
+    "frames_processed": 240,
+    "last_received_at": "2026-10-24T23:27:38.129+00:00",
+    "live": false,
+    "recordings": 0,
+    "session_id": "96a4f613c6474e56bc439a5a7a1b04db",
+    "source_id": "Integrated Camera",
+    "source_type": "camera",
+    "started_at": "2026-10-24T21:27:38.126+00:00",
+    "status": "error",
+    "totals": {
+      "crossing_pedestrians": 0,
+      "crossing_vehicles": 0,
+      "unique_pedestrians": 1,
+      "unique_vehicles": 4
+    },
+    "unique": {
+      "bicycle": 0,
+      "bus": 0,
+      "car": 4,
+      "motorcycle": 0,
+      "person": 1,
+      "truck": 0
+    }
+  },
+  "session_interrupted": {
+    "avg_inference_fps": null,
+    "counts_origin": "incomplete",
+    "crossings": {
+      "bicycle": 0,
+      "bus": 0,
+      "car": 0,
+      "motorcycle": 0,
+      "person": 0,
+      "truck": 0
+    },
+    "device": "lab-pc",
+    "duration_s": 0.0,
+    "ended_at": "2026-10-24T23:27:38.125+00:00",
+    "finalized": true,
+    "finalized_at": "2026-10-24T23:27:38.125+00:00",
+    "first_received_at": "2026-10-24T23:27:38.125+00:00",
+    "frames_processed": 0,
+    "last_received_at": "2026-10-24T23:27:38.125+00:00",
+    "live": false,
+    "recordings": 0,
+    "session_id": "e67d75a8a10b4e36b5d2b665c3c989d7",
+    "source_id": "Integrated Camera",
+    "source_type": "camera",
+    "started_at": "2026-10-24T20:27:38.125+00:00",
+    "status": "interrupted",
+    "totals": {
+      "crossing_pedestrians": 0,
+      "crossing_vehicles": 0,
+      "unique_pedestrians": 0,
+      "unique_vehicles": 0
+    },
+    "unique": {
+      "bicycle": 0,
+      "bus": 0,
+      "car": 0,
+      "motorcycle": 0,
+      "person": 0,
+      "truck": 0
+    }
+  },
+  "session_running": {
+    "avg_inference_fps": null,
+    "counts_origin": "live",
+    "crossings": {
+      "bicycle": 0,
+      "bus": 0,
+      "car": 6,
+      "motorcycle": 0,
+      "person": 1,
+      "truck": 1
+    },
+    "device": "alberto-windows",
+    "duration_s": null,
+    "ended_at": null,
+    "finalized": false,
+    "finalized_at": null,
+    "first_received_at": "2026-10-24T23:27:38.132+00:00",
+    "frames_processed": 1500,
+    "last_received_at": "2026-10-24T23:27:38.132+00:00",
+    "live": true,
+    "recordings": 0,
+    "session_id": "6bde48e4fd8e47c8847f8437c09aa6ed",
+    "source_id": "Integrated Camera",
+    "source_type": "camera",
+    "started_at": "2026-10-24T23:25:38.131+00:00",
+    "status": "running",
+    "totals": {
+      "crossing_pedestrians": 1,
+      "crossing_vehicles": 7,
+      "unique_pedestrians": 4,
+      "unique_vehicles": 15
+    },
+    "unique": {
+      "bicycle": 1,
+      "bus": 1,
+      "car": 11,
+      "motorcycle": 1,
+      "person": 4,
+      "truck": 2
+    }
+  }
+}

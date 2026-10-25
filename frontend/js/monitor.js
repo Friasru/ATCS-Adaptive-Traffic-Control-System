@@ -1,7 +1,12 @@
-// Live monitor page. Talks only to the Flask /api/monitor/* proxy with the
-// user's JWT; the monitor service and its secret are never reachable from here.
-// All API text goes into the page through textContent or element properties,
-// never innerHTML.
+// Monitor page: sign-in and access shared by both parts, plus the server-side
+// (Phase 4, legacy) monitor. The desktop part is in monitor-desktop.js. Talks
+// only to the Flask /api/monitor/* endpoints with the user's JWT; the monitor
+// service and its secret are never reachable from here. All API text goes into
+// the page through textContent or element properties, never innerHTML.
+//
+// The legacy panel is collapsed by default: one status request on load tells
+// whether the service is configured, and it is polled (status and frames) only
+// while the panel is open.
 
 // ~9 frames per second at most; a new frame request starts only after the
 // previous one has finished.
@@ -64,6 +69,12 @@ const els = {
   sessionsRefresh: document.getElementById("sessions-refresh"),
   sessionsMessage: document.getElementById("sessions-message"),
   sessionsBody: document.getElementById("sessions-body"),
+  legacyPanel: document.getElementById("legacy-panel"),
+  legacyLayout: document.getElementById("legacy-layout"),
+  legacyControls: document.getElementById("legacy-controls"),
+  legacyNote: document.getElementById("legacy-note"),
+  legacySummaryState: document.getElementById("legacy-summary-state"),
+  legacyConflict: document.getElementById("legacy-conflict"),
 };
 
 const TILES = {
@@ -89,6 +100,7 @@ const session = { token: null, username: null, expiryTimer: null, role: null };
 const poll = { gen: 0, abort: null, statusTimer: null, frameTimer: null, statusBusy: false, frameBusy: false };
 let status = null; // last status document from GET /api/monitor/status
 let serviceProblem = null; // text while the service cannot be used, else null
+let serviceProblemCode = ""; // its error code (service_not_configured, ...)
 let frameUrl = null; // object URL currently shown in the feed image
 let frameTrouble = null; // text while frames fail although monitoring runs
 let sources = [];
@@ -99,12 +111,17 @@ let lastSessionKey = null;
 
 class SessionExpired extends Error {}
 
-async function api(path, { method = "GET", body, auth = true, as = "json" } = {}) {
+async function api(path, { method = "GET", body, auth = true, as = "json", timeoutMs = 0 } = {}) {
   const headers = {};
   if (body) headers["Content-Type"] = "application/json";
   if (auth) {
     if (!session.token) throw new SessionExpired();
     headers.Authorization = "Bearer " + session.token;
+  }
+  let signal = auth && poll.abort ? poll.abort.signal : undefined;
+  // A request that hangs would stop its polling loop; give up and retry instead.
+  if (signal && timeoutMs > 0 && typeof AbortSignal.any === "function" && typeof AbortSignal.timeout === "function") {
+    signal = AbortSignal.any([signal, AbortSignal.timeout(timeoutMs)]);
   }
   let response;
   try {
@@ -113,7 +130,7 @@ async function api(path, { method = "GET", body, auth = true, as = "json" } = {}
       headers,
       body: body ? JSON.stringify(body) : undefined,
       cache: "no-store",
-      signal: auth && poll.abort ? poll.abort.signal : undefined,
+      signal,
     });
   } catch (err) {
     return { ok: false, status: 0, data: null, frameIndex: "" };
@@ -347,14 +364,63 @@ function begin() {
   els.deniedPanel.hidden = true;
   els.monitor.hidden = false;
   renderAll();
-  statusTick();
+  desktopBegin();
+  statusTick(); // legacy service: one request to learn whether it is configured
   checkRole();
+  if (legacyOpen()) legacyOpened();
+}
+
+// ---------- legacy panel ----------
+
+function legacyOpen() {
+  return els.legacyPanel.open;
+}
+
+function legacyOpened() {
+  if (!polling()) return;
+  clearTimeout(poll.statusTimer);
+  if (!poll.statusBusy) statusTick();
   guard(loadSources);
   guard(loadSessions);
+  syncFramePolling();
+}
+
+function legacyClosed() {
+  clearTimeout(poll.statusTimer);
+  clearTimeout(poll.frameTimer);
+  poll.statusTimer = null;
+  poll.frameTimer = null;
+  clearFrame();
+  renderFeed();
+}
+
+// Label of the camera the legacy service is using, for monitor-desktop.js.
+function legacyCameraSession() {
+  const s = status;
+  if (serviceProblem || !s || !s.running || !s.source || s.source.kind !== "camera") return null;
+  return String(s.source.label || s.source.id);
+}
+
+function renderLegacyShell() {
+  const notConfigured = serviceProblemCode === "service_not_configured";
+  els.legacyLayout.hidden = notConfigured;
+  els.legacyControls.hidden = Boolean(serviceProblem);
+  els.legacyNote.hidden = !serviceProblem;
+  setMessage(els.legacyNote, notConfigured
+    ? "The server-side monitor service is not configured on this ATCS server, so it has no controls here. " +
+      "Use the Desktop Monitor above."
+    : serviceProblem ? serviceProblem + " Its controls are shown again once it answers." : "",
+  Boolean(serviceProblem && !notConfigured));
+  let summary = "";
+  if (notConfigured) summary = "Not configured";
+  else if (serviceProblem) summary = "Unavailable";
+  else if (status) summary = status.running ? "Running: " + (STATE_LABELS[status.state] || String(status.state)) : "Available, idle";
+  els.legacySummaryState.textContent = summary ? "(" + summary + ")" : "";
 }
 
 function stopPolling() {
   poll.gen++;
+  desktopStop();
   if (poll.abort) poll.abort.abort();
   poll.abort = null;
   clearTimeout(poll.statusTimer);
@@ -375,9 +441,12 @@ function resetView() {
   lastSessionKey = null;
   els.roleBadge.hidden = true;
   els.viewerNote.hidden = true;
+  serviceProblemCode = "";
   els.sessionsBody.replaceChildren();
   setMessage(els.controlMessage, "");
   setMessage(els.sessionsMessage, "");
+  desktopReset();
+  renderLegacyShell();
 }
 
 function polling() {
@@ -393,7 +462,7 @@ function statusDelay() {
 
 function scheduleStatus(delay = statusDelay()) {
   clearTimeout(poll.statusTimer);
-  poll.statusTimer = polling() ? setTimeout(statusTick, delay) : null;
+  poll.statusTimer = polling() && legacyOpen() ? setTimeout(statusTick, delay) : null;
 }
 
 function statusTick() {
@@ -407,11 +476,13 @@ function statusTick() {
       if (gen !== poll.gen) return;
       if (r.ok && r.data && typeof r.data === "object") {
         serviceProblem = null;
+        serviceProblemCode = "";
         applyStatus(r.data);
       } else if (r.status === 403) {
         showDenied();
       } else {
         serviceProblem = serviceFailureText(r);
+        serviceProblemCode = errorCode(r);
         renderAll();
       }
     } finally {
@@ -424,7 +495,7 @@ function statusTick() {
 }
 
 function frameWanted() {
-  return polling() && !document.hidden && !serviceProblem && status && status.running &&
+  return polling() && legacyOpen() && !document.hidden && !serviceProblem && status && status.running &&
     FRAME_STATES.includes(status.state);
 }
 
@@ -505,7 +576,7 @@ function applyStatus(data) {
   resolvePending();
   const key = (data.session_id || "") + "|" + (data.running ? "running" : "stopped");
   // A session that starts or ends changes the recent sessions list.
-  if (lastSessionKey !== null && key !== lastSessionKey) guard(loadSessions);
+  if (lastSessionKey !== null && key !== lastSessionKey && legacyOpen()) guard(loadSessions);
   lastSessionKey = key;
   checkRole();
   renderAll();
@@ -590,7 +661,7 @@ async function command(kind, button) {
   let body;
   if (kind === "start") {
     const source = els.sourceSelect.value;
-    if (!source) return;
+    if (!source || desktopCameraConflict()) return;
     body = { source, loop: !els.loopVideo.disabled && els.loopVideo.checked };
   }
   pending = { kind, button, deadline: Date.now() + spec.timeoutMs };
@@ -730,6 +801,7 @@ function renderSessions(rows) {
 // ---------- rendering ----------
 
 function renderAll() {
+  renderLegacyShell();
   renderState();
   renderControls();
   renderStats();
@@ -773,6 +845,12 @@ function setBusyLabel(button, busy) {
   button.setAttribute("aria-busy", busy ? "true" : "false");
 }
 
+// A camera source is selected while a desktop reports a camera session.
+function desktopCameraConflict() {
+  const selected = sources.find((src) => src.id === els.sourceSelect.value);
+  return Boolean(selected && selected.kind === "camera" && desktopCameraInUse());
+}
+
 function renderControls() {
   const s = status;
   const operator = session.role === "operator";
@@ -784,10 +862,16 @@ function renderControls() {
   const selected = sources.find((src) => src.id === els.sourceSelect.value);
 
   if (running && s.source && sources.some((src) => src.id === s.source.id)) els.sourceSelect.value = s.source.id;
+  const conflict = !running && desktopCameraConflict();
   els.sourceSelect.disabled = !usable || running || transition || sources.length === 0;
   els.loopVideo.disabled = els.sourceSelect.disabled || !selected || selected.kind !== "video_file";
   els.loopField.classList.toggle("disabled", els.loopVideo.disabled);
-  els.startButton.disabled = !usable || running || transition || !selected || modelMissing;
+  els.startButton.disabled = !usable || running || transition || !selected || modelMissing || conflict;
+  els.legacyConflict.hidden = !conflict;
+  els.legacyConflict.textContent = conflict
+    ? "The desktop '" + desktopCameraInUse() + "' is monitoring a camera. This page does not start a server camera " +
+      "at the same time (a check made by this page only; the server does not prevent it)."
+    : "";
   els.stopButton.disabled = !usable || !running || state === "Stopping";
   els.recStartButton.disabled = !usable || state !== "Detecting";
   els.recStopButton.disabled = !usable || state !== "Recording";
@@ -880,11 +964,12 @@ function renderFeed() {
 
 function onVisibility() {
   if (!polling()) return;
+  desktopVisibility();
   if (document.hidden) {
     clearTimeout(poll.frameTimer);
     poll.frameTimer = null;
     scheduleStatus(STATUS_HIDDEN_MS);
-  } else {
+  } else if (legacyOpen()) {
     clearTimeout(poll.statusTimer);
     if (!poll.statusBusy) statusTick();
     syncFramePolling();
@@ -903,6 +988,7 @@ els.stopButton.addEventListener("click", () => guard(() => command("stop", els.s
 els.recStartButton.addEventListener("click", () => guard(() => command("recStart", els.recStartButton)));
 els.recStopButton.addEventListener("click", () => guard(() => command("recStop", els.recStopButton)));
 els.sessionsRefresh.addEventListener("click", () => guard(loadSessions));
+els.legacyPanel.addEventListener("toggle", () => (legacyOpen() ? legacyOpened() : legacyClosed()));
 document.addEventListener("visibilitychange", onVisibility);
 // Leaving the page stops every timer and request and releases the frame.
 window.addEventListener("pagehide", stopPolling);

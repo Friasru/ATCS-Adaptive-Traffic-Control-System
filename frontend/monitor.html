@@ -45,70 +45,84 @@
       <button type="button" id="denied-retry" class="secondary">Check again</button>
     </section>
 
-    <div id="monitor" class="monitor-layout" hidden>
-      <section class="panel feed-panel" aria-labelledby="feed-title">
+    <div id="monitor" class="monitor-main" hidden>
+      <section class="panel desk-launch" aria-labelledby="desk-title">
         <div class="panel-head">
-          <h2 id="feed-title">Live camera</h2>
-          <span id="state-badge" class="state-badge" data-state="unknown">Checking...</span>
+          <h1 id="desk-title">Desktop Monitor</h1>
+          <span class="badges">
+            <span id="desk-connection-badge" class="state-badge" data-state="unknown">Checking...</span>
+            <span id="desk-monitoring-badge" class="state-badge" data-state="Detecting" hidden>Monitoring</span>
+            <span id="desk-recording-badge" class="rec-badge" hidden>REC</span>
+          </span>
         </div>
-        <div class="feed" id="feed">
-          <img id="feed-image" alt="Annotated live frame with detection boxes" hidden>
-          <div class="feed-overlay" id="feed-overlay">
-            <span class="spinner" id="feed-spinner" hidden></span>
-            <span id="feed-message">Monitoring is not running.</span>
-          </div>
+        <p>Vehicle and pedestrian counting runs in the ATCS Monitor desktop app on Windows. Start a camera or
+          video there; this page shows what the app reports to the ATCS server and keeps every finished session.</p>
+        <div class="launch-row">
+          <a id="desk-open" class="button-link" href="atcs-monitor://open">Open Desktop Monitor</a>
+          <p class="muted small launch-note">Opens the app installed on <strong>this computer</strong> (the one
+            running this browser), not on the ATCS server. Your browser may ask whether to open an external
+            program: choose <em>Open</em>. Nothing starts until you press Start in the app.</p>
         </div>
-        <p class="feed-meta muted" id="feed-meta"></p>
+        <p id="desk-launch-message" class="message" role="status" aria-live="polite"></p>
+        <p id="desk-legacy-camera" class="message error" hidden></p>
+        <div id="desk-help" class="desk-help" hidden>
+          <h2 class="sub">Desktop not connecting?</h2>
+          <ul>
+            <li><strong>Nothing opened:</strong> the <code>atcs-monitor://</code> launcher is not installed on this
+              computer, or the browser prompt was dismissed or blocked. Install it on Windows with
+              <code>monitor\scripts\windows\install_uri_handler.ps1</code> (see <code>monitor/docs/desktop_link.md</code>,
+              section 7), and allow the prompt or re-enable it in the browser's site settings.</li>
+            <li><strong>The app opened but this page still waits:</strong> check the <code>ATCS: ...</code> label in the
+              app's status bar. Run <code>python -m app.desktop_link check</code> in the Windows <code>monitor</code>
+              folder, and make sure the ATCS server (Flask) is running.</li>
+            <li><strong>Different computer:</strong> the button can only open an app on the computer showing this
+              page. On another computer, start the desktop app there; its results still appear here.</li>
+          </ul>
+        </div>
       </section>
 
-      <div class="side">
-        <section class="panel controls-panel" aria-labelledby="controls-title">
+      <div class="desk-layout">
+        <section class="panel desk-connection-panel" aria-labelledby="desk-connection-title">
           <div class="panel-head">
-            <h2 id="controls-title">Controls</h2>
-            <span id="recording-badge" class="rec-badge" hidden>REC</span>
+            <h2 id="desk-connection-title">Connection</h2>
+            <span class="field inline-field" id="desk-device-field" hidden>
+              <label for="desk-device">Desktop</label>
+              <select id="desk-device"></select>
+            </span>
           </div>
-          <div class="field">
-            <label for="source-select">Source</label>
-            <select id="source-select" disabled>
-              <option value="">Loading sources...</option>
-            </select>
-          </div>
-          <label class="check" id="loop-field">
-            <input type="checkbox" id="loop-video"> Loop video until stopped
-          </label>
-          <div class="control-grid">
-            <button type="button" id="start-button" disabled>Start monitoring</button>
-            <button type="button" id="stop-button" class="secondary" disabled>Stop monitoring</button>
-            <button type="button" id="rec-start-button" class="rec" disabled>Start recording</button>
-            <button type="button" id="rec-stop-button" class="secondary" disabled>Stop recording</button>
-          </div>
-          <p class="muted small" id="shared-note">One monitoring session is shared by everyone using the monitor:
-            these controls start and stop it for all viewers.</p>
-          <p class="muted small" id="viewer-note" hidden>View only: your account can watch the monitor but not operate it.</p>
+          <p id="desk-status-message" class="message"></p>
           <dl class="status-list">
-            <div><dt>Monitoring</dt><dd id="monitoring-status">–</dd></div>
-            <div><dt>Recording</dt><dd id="recording-status">–</dd></div>
-            <div><dt>Source</dt><dd id="current-source">–</dd></div>
-            <div><dt>Session</dt><dd id="session-id" class="mono">–</dd></div>
+            <div><dt>Connection</dt><dd id="desk-connection">–</dd></div>
+            <div><dt>Monitoring</dt><dd id="desk-monitoring">–</dd></div>
+            <div><dt>Recording</dt><dd id="desk-recording">–</dd></div>
+            <div><dt>Last update</dt><dd id="desk-last-update">–</dd></div>
+            <div><dt>Desktop</dt><dd id="desk-device-name">–</dd></div>
+            <div><dt>App</dt><dd id="desk-app">–</dd></div>
+            <div><dt>Source</dt><dd id="desk-source">–</dd></div>
+            <div><dt>Camera</dt><dd id="desk-camera">–</dd></div>
+            <div><dt>Inference</dt><dd id="desk-inference">–</dd></div>
+            <div><dt>Session</dt><dd id="desk-session" class="mono">–</dd></div>
           </dl>
-          <p id="control-message" class="message" role="alert"></p>
+          <p class="muted small">Connected means the server received a heartbeat from this desktop in the last
+            <span id="desk-timeout">15</span> s. The app sends one every second while monitoring and every 10 s when idle.</p>
         </section>
 
-        <section class="panel stats-panel" aria-labelledby="stats-title">
+        <section class="panel desk-stats-panel" aria-labelledby="desk-stats-title">
           <div class="panel-head">
-            <h2 id="stats-title">Statistics</h2>
-            <span class="muted small-inline" id="stats-scope"></span>
+            <h2 id="desk-stats-title">Live statistics</h2>
+            <span class="muted small-inline" id="desk-stats-scope"></span>
           </div>
           <div class="tiles">
-            <div class="tile"><span class="tile-value" id="stat-visible-vehicles">0</span><span class="tile-label">Vehicles in view</span></div>
-            <div class="tile"><span class="tile-value" id="stat-unique-vehicles">0</span><span class="tile-label">Unique vehicles</span></div>
-            <div class="tile"><span class="tile-value" id="stat-crossing-vehicles">0</span><span class="tile-label">Vehicle line crossings</span></div>
-            <div class="tile"><span class="tile-value" id="stat-visible-pedestrians">0</span><span class="tile-label">Pedestrians in view</span></div>
-            <div class="tile"><span class="tile-value" id="stat-unique-pedestrians">0</span><span class="tile-label">Unique pedestrians</span></div>
-            <div class="tile"><span class="tile-value" id="stat-crossing-pedestrians">0</span><span class="tile-label">Pedestrian line crossings</span></div>
+            <div class="tile"><span class="tile-value" id="desk-visible-vehicles">–</span><span class="tile-label">Vehicles in view</span></div>
+            <div class="tile"><span class="tile-value" id="desk-unique-vehicles">–</span><span class="tile-label">Unique vehicles</span></div>
+            <div class="tile"><span class="tile-value" id="desk-crossing-vehicles">–</span><span class="tile-label">Vehicle line crossings</span></div>
+            <div class="tile"><span class="tile-value" id="desk-visible-pedestrians">–</span><span class="tile-label">Pedestrians in view</span></div>
+            <div class="tile"><span class="tile-value" id="desk-unique-pedestrians">–</span><span class="tile-label">Unique pedestrians</span></div>
+            <div class="tile"><span class="tile-value" id="desk-crossing-pedestrians">–</span><span class="tile-label">Pedestrian line crossings</span></div>
           </div>
           <div class="table-wrap">
-            <table class="compact" id="class-table">
+            <table class="compact">
+              <caption class="sr-only">Counts per class</caption>
               <thead>
                 <tr>
                   <th scope="col">Class</th>
@@ -117,70 +131,270 @@
                   <th scope="col" class="num">Crossings</th>
                 </tr>
               </thead>
-              <tbody id="class-body"></tbody>
+              <tbody id="desk-class-body"></tbody>
             </table>
           </div>
-          <div id="lines-block" hidden>
-            <h3 class="sub">Crossings per counting line</h3>
-            <div class="table-wrap">
-              <table class="compact">
-                <thead>
-                  <tr>
-                    <th scope="col">Line</th>
-                    <th scope="col" class="num">A → B</th>
-                    <th scope="col" class="num">B → A</th>
-                  </tr>
-                </thead>
-                <tbody id="lines-body"></tbody>
-              </table>
-            </div>
-          </div>
           <dl class="perf-list">
-            <div><dt>Detection FPS</dt><dd id="perf-inference-fps">–</dd></div>
-            <div><dt>Capture FPS</dt><dd id="perf-capture-fps">–</dd></div>
-            <div><dt>Processing latency</dt><dd id="perf-latency">–</dd></div>
-            <div><dt>Frames processed</dt><dd id="perf-frames">–</dd></div>
-            <div><dt>Frames dropped</dt><dd id="perf-dropped">–</dd></div>
-            <div><dt>Active tracks</dt><dd id="perf-tracks">–</dd></div>
-            <div><dt>Device</dt><dd id="perf-device">–</dd></div>
-            <div><dt>Model</dt><dd id="perf-model">–</dd></div>
+            <div><dt>Detection FPS</dt><dd id="desk-inference-fps">–</dd></div>
+            <div><dt>Capture FPS</dt><dd id="desk-capture-fps">–</dd></div>
+            <div><dt>Active tracks</dt><dd id="desk-tracks">–</dd></div>
+            <div><dt>Processing latency</dt><dd id="desk-latency">–</dd></div>
+            <div><dt>Frames processed</dt><dd id="desk-frames">–</dd></div>
+            <div><dt>Frames dropped</dt><dd id="desk-dropped">–</dd></div>
           </dl>
-          <p class="muted small">Unique counts are distinct tracked objects this session; crossings count line-crossing
-            events. Vehicles are cars, motorcycles, buses and trucks; bicycles are listed per class only.
-            Processing latency is the inference time of the last frame.</p>
+          <p class="muted small">In view: objects in the current frame. Unique: distinct tracked objects this session.
+            Crossings: counting-line crossing events. Vehicles are cars, motorcycles, buses and trucks; bicycles are
+            listed per class only. – means not reported, which is different from 0.</p>
         </section>
       </div>
 
-      <section class="panel sessions-panel" aria-labelledby="sessions-title">
+      <section class="panel desk-sessions-panel" aria-labelledby="desk-sessions-title">
         <div class="panel-head">
-          <h2 id="sessions-title">Recent sessions</h2>
-          <button type="button" id="sessions-refresh" class="secondary">Refresh</button>
+          <h2 id="desk-sessions-title">Desktop sessions</h2>
+          <span class="toolbar-inline">
+            <span class="field inline-field">
+              <label for="desk-filter">Desktop</label>
+              <select id="desk-filter"><option value="">All desktops</option></select>
+            </span>
+            <button type="button" id="desk-sessions-refresh" class="secondary">Refresh</button>
+          </span>
         </div>
-        <p id="sessions-message" class="muted"></p>
+        <p id="desk-sessions-message" class="muted"></p>
         <div class="table-wrap">
-          <table id="sessions-table">
+          <table id="desk-sessions-table">
+            <caption class="sr-only">Saved desktop monitoring sessions, newest first. Times are in your local time zone.</caption>
             <thead>
               <tr>
                 <th scope="col">Started</th>
+                <th scope="col">Desktop</th>
                 <th scope="col">Source</th>
                 <th scope="col">Status</th>
                 <th scope="col" class="num">Duration</th>
-                <th scope="col" class="num">Frames</th>
                 <th scope="col" class="num">Unique vehicles</th>
                 <th scope="col" class="num">Unique pedestrians</th>
                 <th scope="col" class="num">Vehicle crossings</th>
+                <th scope="col" class="num">Pedestrian crossings</th>
                 <th scope="col" class="num">Recordings</th>
-                <th scope="col">Session</th>
+                <th scope="col">Statistics</th>
+                <th scope="col"><span class="sr-only">Details</span></th>
               </tr>
             </thead>
-            <tbody id="sessions-body"></tbody>
+            <tbody id="desk-sessions-body"></tbody>
           </table>
         </div>
+        <p class="muted small">Times are shown in your local time zone (<span id="desk-tz"></span>). Sessions are stored
+          by the ATCS server and stay here when the desktop app is closed. Video stays on the desktop computer:
+          only recording file names are stored here.</p>
+
+        <section id="desk-detail" class="desk-detail" aria-labelledby="desk-detail-title" hidden>
+          <div class="panel-head">
+            <h3 id="desk-detail-title" tabindex="-1">Session details</h3>
+            <button type="button" id="desk-detail-close" class="secondary">Close details</button>
+          </div>
+          <p id="desk-detail-message" class="message"></p>
+          <div id="desk-detail-body" hidden>
+            <dl class="status-list detail-list">
+              <div><dt>Session</dt><dd id="dd-session" class="mono">–</dd></div>
+              <div><dt>Desktop</dt><dd id="dd-device">–</dd></div>
+              <div><dt>Source</dt><dd id="dd-source">–</dd></div>
+              <div><dt>Status</dt><dd id="dd-status">–</dd></div>
+              <div><dt>Statistics</dt><dd id="dd-stats">–</dd></div>
+              <div><dt>Started</dt><dd id="dd-started">–</dd></div>
+              <div><dt>Ended</dt><dd id="dd-ended">–</dd></div>
+              <div><dt>Duration</dt><dd id="dd-duration">–</dd></div>
+              <div><dt>Frames processed</dt><dd id="dd-frames">–</dd></div>
+              <div><dt>Average detection FPS</dt><dd id="dd-fps">–</dd></div>
+              <div><dt>Model</dt><dd id="dd-model">–</dd></div>
+              <div><dt>App version</dt><dd id="dd-app">–</dd></div>
+              <div><dt>Crossing events stored</dt><dd id="dd-events">–</dd></div>
+              <div><dt>Last received by server</dt><dd id="dd-received">–</dd></div>
+            </dl>
+            <div class="table-wrap">
+              <table class="compact">
+                <caption class="sr-only">Session counts per class</caption>
+                <thead>
+                  <tr>
+                    <th scope="col">Class</th>
+                    <th scope="col" class="num">Unique</th>
+                    <th scope="col" class="num">Crossings</th>
+                  </tr>
+                </thead>
+                <tbody id="dd-class-body"></tbody>
+              </table>
+            </div>
+            <div id="dd-lines-block" hidden>
+              <h4 class="sub">Crossings per counting line</h4>
+              <div class="table-wrap">
+                <table class="compact">
+                  <thead>
+                    <tr>
+                      <th scope="col">Line</th>
+                      <th scope="col" class="num">A → B</th>
+                      <th scope="col" class="num">B → A</th>
+                    </tr>
+                  </thead>
+                  <tbody id="dd-lines-body"></tbody>
+                </table>
+              </div>
+            </div>
+            <h4 class="sub">Recordings</h4>
+            <p id="dd-recordings-empty" class="muted small-inline" hidden></p>
+            <ul id="dd-recordings" class="plain-list"></ul>
+            <p class="muted small">Recordings are saved on the desktop computer; the server stores only their names.</p>
+          </div>
+        </section>
       </section>
+
+      <details class="panel legacy" id="legacy-panel">
+        <summary>
+          <span class="legacy-title">Server-side Monitor — Legacy</span>
+          <span class="muted small-inline" id="legacy-summary-state"></span>
+        </summary>
+        <p class="muted small">The Phase 4 monitor service runs on the ATCS server itself (not in the desktop app) and
+          streams frames to this page. It is kept for compatibility; the desktop app above is the main way to monitor.</p>
+        <p id="legacy-note" class="message" hidden></p>
+        <div class="monitor-layout" id="legacy-layout">
+          <section class="panel feed-panel" aria-labelledby="feed-title">
+            <div class="panel-head">
+              <h2 id="feed-title">Live camera</h2>
+              <span id="state-badge" class="state-badge" data-state="unknown">Checking...</span>
+            </div>
+            <div class="feed" id="feed">
+              <img id="feed-image" alt="Annotated live frame with detection boxes" hidden>
+              <div class="feed-overlay" id="feed-overlay">
+                <span class="spinner" id="feed-spinner" hidden></span>
+                <span id="feed-message">Monitoring is not running.</span>
+              </div>
+            </div>
+            <p class="feed-meta muted" id="feed-meta"></p>
+          </section>
+
+          <div class="side">
+            <section class="panel controls-panel" aria-labelledby="controls-title">
+              <div class="panel-head">
+                <h2 id="controls-title">Controls</h2>
+                <span id="recording-badge" class="rec-badge" hidden>REC</span>
+              </div>
+              <div id="legacy-controls">
+                <div class="field">
+                  <label for="source-select">Source</label>
+                  <select id="source-select" disabled>
+                    <option value="">Loading sources...</option>
+                  </select>
+                </div>
+                <label class="check" id="loop-field">
+                  <input type="checkbox" id="loop-video"> Loop video until stopped
+                </label>
+                <div class="control-grid">
+                  <button type="button" id="start-button" disabled>Start monitoring</button>
+                  <button type="button" id="stop-button" class="secondary" disabled>Stop monitoring</button>
+                  <button type="button" id="rec-start-button" class="rec" disabled>Start recording</button>
+                  <button type="button" id="rec-stop-button" class="secondary" disabled>Stop recording</button>
+                </div>
+                <p class="muted small" id="shared-note">One monitoring session is shared by everyone using the monitor:
+                  these controls start and stop it for all viewers.</p>
+                <p class="muted small" id="viewer-note" hidden>View only: your account can watch the monitor but not operate it.</p>
+                <p class="message error" id="legacy-conflict" hidden></p>
+              </div>
+              <dl class="status-list">
+                <div><dt>Monitoring</dt><dd id="monitoring-status">–</dd></div>
+                <div><dt>Recording</dt><dd id="recording-status">–</dd></div>
+                <div><dt>Source</dt><dd id="current-source">–</dd></div>
+                <div><dt>Session</dt><dd id="session-id" class="mono">–</dd></div>
+              </dl>
+              <p id="control-message" class="message" role="alert"></p>
+            </section>
+
+            <section class="panel stats-panel" aria-labelledby="stats-title">
+              <div class="panel-head">
+                <h2 id="stats-title">Statistics</h2>
+                <span class="muted small-inline" id="stats-scope"></span>
+              </div>
+              <div class="tiles">
+                <div class="tile"><span class="tile-value" id="stat-visible-vehicles">0</span><span class="tile-label">Vehicles in view</span></div>
+                <div class="tile"><span class="tile-value" id="stat-unique-vehicles">0</span><span class="tile-label">Unique vehicles</span></div>
+                <div class="tile"><span class="tile-value" id="stat-crossing-vehicles">0</span><span class="tile-label">Vehicle line crossings</span></div>
+                <div class="tile"><span class="tile-value" id="stat-visible-pedestrians">0</span><span class="tile-label">Pedestrians in view</span></div>
+                <div class="tile"><span class="tile-value" id="stat-unique-pedestrians">0</span><span class="tile-label">Unique pedestrians</span></div>
+                <div class="tile"><span class="tile-value" id="stat-crossing-pedestrians">0</span><span class="tile-label">Pedestrian line crossings</span></div>
+              </div>
+              <div class="table-wrap">
+                <table class="compact" id="class-table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Class</th>
+                      <th scope="col" class="num">In view</th>
+                      <th scope="col" class="num">Unique</th>
+                      <th scope="col" class="num">Crossings</th>
+                    </tr>
+                  </thead>
+                  <tbody id="class-body"></tbody>
+                </table>
+              </div>
+              <div id="lines-block" hidden>
+                <h3 class="sub">Crossings per counting line</h3>
+                <div class="table-wrap">
+                  <table class="compact">
+                    <thead>
+                      <tr>
+                        <th scope="col">Line</th>
+                        <th scope="col" class="num">A → B</th>
+                        <th scope="col" class="num">B → A</th>
+                      </tr>
+                    </thead>
+                    <tbody id="lines-body"></tbody>
+                  </table>
+                </div>
+              </div>
+              <dl class="perf-list">
+                <div><dt>Detection FPS</dt><dd id="perf-inference-fps">–</dd></div>
+                <div><dt>Capture FPS</dt><dd id="perf-capture-fps">–</dd></div>
+                <div><dt>Processing latency</dt><dd id="perf-latency">–</dd></div>
+                <div><dt>Frames processed</dt><dd id="perf-frames">–</dd></div>
+                <div><dt>Frames dropped</dt><dd id="perf-dropped">–</dd></div>
+                <div><dt>Active tracks</dt><dd id="perf-tracks">–</dd></div>
+                <div><dt>Device</dt><dd id="perf-device">–</dd></div>
+                <div><dt>Model</dt><dd id="perf-model">–</dd></div>
+              </dl>
+              <p class="muted small">Unique counts are distinct tracked objects this session; crossings count line-crossing
+                events. Vehicles are cars, motorcycles, buses and trucks; bicycles are listed per class only.
+                Processing latency is the inference time of the last frame.</p>
+            </section>
+          </div>
+
+          <section class="panel sessions-panel" aria-labelledby="sessions-title">
+            <div class="panel-head">
+              <h2 id="sessions-title">Server-side sessions</h2>
+              <button type="button" id="sessions-refresh" class="secondary">Refresh</button>
+            </div>
+            <p id="sessions-message" class="muted"></p>
+            <div class="table-wrap">
+              <table id="sessions-table">
+                <thead>
+                  <tr>
+                    <th scope="col">Started</th>
+                    <th scope="col">Source</th>
+                    <th scope="col">Status</th>
+                    <th scope="col" class="num">Duration</th>
+                    <th scope="col" class="num">Frames</th>
+                    <th scope="col" class="num">Unique vehicles</th>
+                    <th scope="col" class="num">Unique pedestrians</th>
+                    <th scope="col" class="num">Vehicle crossings</th>
+                    <th scope="col" class="num">Recordings</th>
+                    <th scope="col">Session</th>
+                  </tr>
+                </thead>
+                <tbody id="sessions-body"></tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+      </details>
     </div>
   </main>
 
   <script src="js/auth.js"></script>
+  <script src="js/monitor-desktop.js"></script>
   <script src="js/monitor.js"></script>
 </body>
 </html>

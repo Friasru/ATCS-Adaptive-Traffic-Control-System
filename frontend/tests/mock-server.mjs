@@ -3,8 +3,16 @@
 // the same status codes and response shapes as backend/app/api/*.py and the
 // monitor service (see monitor/docs/web_service.md). Tests change `mock`
 // directly to script states and failures.
+//
+// Desktop telemetry views (/api/monitor/desktop/*) are served from
+// fixtures/desktop-payloads.json, which is real backend output
+// (backend/tests/desktop_dashboard_fixture.py; its shape is checked by
+// backend/tests/test_desktop_dashboard_contract.py). Like the backend, the
+// mock derives live / connection / running / recording.active from the time
+// the server "received" each device's last heartbeat.
 
 import http from "node:http";
+import { readFileSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -18,6 +26,77 @@ export const JPEG = Buffer.from(
   "/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wgALCAABAAEBAREA/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPxA=",
   "base64",
 );
+
+export const DESKTOP = JSON.parse(readFileSync(new URL("./fixtures/desktop-payloads.json", import.meta.url), "utf8"));
+const DESK_RUNNING = ["Initializing", "Detecting", "Recording", "Stopping"];
+const DEVICE_NAME_RE = /^[A-Za-z0-9_.-]{3,64}$/;
+const clone = (x) => structuredClone(x);
+// The backend's iso(): UTC with an explicit offset.
+export const serverIso = (ms) => new Date(ms).toISOString().replace("Z", "+00:00");
+
+// A registered desktop. template: "recording" | "idle" | "never" (fixture
+// device_*); ageS: seconds since its last heartbeat reached the server.
+export function deskDevice(template, { name, ageS = 0, ...overrides } = {}) {
+  const doc = clone(DESKTOP["device_" + template]);
+  if (name) doc.desktop.name = name;
+  Object.assign(doc, overrides);
+  return { doc, receivedAt: template === "never" ? null : Date.now() - ageS * 1000 };
+}
+
+// The desktop sends a heartbeat now.
+export function heartbeat(device) {
+  device.receivedAt = Date.now();
+}
+
+// A stored session from the fixture (session_*), optionally changed.
+export function deskSession(template, overrides = {}) {
+  return { ...clone(DESKTOP["session_" + template]), ...overrides };
+}
+
+export function deskDetail(template, overrides = {}) {
+  return { ...clone(DESKTOP["detail_" + template]), ...overrides };
+}
+
+function deskStatusView(dev, now) {
+  const d = clone(dev.doc);
+  const age = dev.receivedAt === null ? null : (now - dev.receivedAt) / 1000;
+  const live = age !== null && age <= mock.desktop.timeoutS;
+  d.desktop.connection = dev.receivedAt === null ? "never_connected" : live ? "connected" : "disconnected";
+  d.desktop.last_seen_at = dev.receivedAt === null ? null : serverIso(dev.receivedAt);
+  d.desktop.seconds_since_seen = age === null ? null : Math.round(age * 10) / 10;
+  d.live = live;
+  d.running = live && DESK_RUNNING.includes(d.state);
+  if (d.recording) d.recording.active = live && Boolean(dev.doc.recording && dev.doc.recording.active);
+  return d;
+}
+
+function desktopApi(res, p, url) {
+  if (p === "/monitor/desktop/status") {
+    const now = Date.now();
+    return send(res, 200, {
+      heartbeat_timeout_s: mock.desktop.timeoutS,
+      server_time: serverIso(now),
+      devices: mock.desktop.devices.map((d) => deskStatusView(d, now)),
+    });
+  }
+  if (p === "/monitor/desktop/sessions") {
+    const unknown = [...url.searchParams.keys()].filter((k) => !["limit", "device"].includes(k));
+    if (unknown.length) return err(res, 400, "invalid_query", "unknown parameter(s): " + unknown.sort().join(", "));
+    const limit = url.searchParams.get("limit") ?? "50";
+    if (!/^\d+$/.test(limit) || +limit < 1 || +limit > 200) return err(res, 400, "invalid_query", "limit must be 1 to 200");
+    const device = url.searchParams.get("device");
+    if (device !== null && !DEVICE_NAME_RE.test(device)) return err(res, 400, "invalid_query", "invalid device name");
+    const rows = mock.desktop.sessions.filter((s) => device === null || s.device === device).slice(0, +limit);
+    return send(res, 200, { sessions: clone(rows) });
+  }
+  const m = p.match(/^\/monitor\/desktop\/sessions\/([^/]*)$/);
+  if (m) {
+    if (!/^[0-9a-f]{32}$/.test(m[1])) return err(res, 400, "invalid_session_id", "session id must be 32 lowercase hex characters");
+    const detail = mock.desktop.details[m[1]];
+    return detail ? send(res, 200, clone(detail)) : err(res, 404, "not_found", "session not found");
+  }
+  return send(res, 404, { error: "not found" });
+}
 
 function b64url(obj) {
   return Buffer.from(JSON.stringify(obj)).toString("base64url");
@@ -58,6 +137,13 @@ export function freshMock() {
       { id: "video:car-detection.mp4", kind: "video_file", label: "car-detection.mp4" },
     ],
     sessions: [],
+    serviceConfigured: true, // false: the legacy endpoints answer 503 service_not_configured
+    desktop: {
+      timeoutS: DESKTOP.heartbeat_timeout_s,
+      devices: [], // deskDevice(...) entries
+      sessions: [], // list rows, newest first
+      details: {}, // session_id -> detail document
+    },
     // Scripted failures: endpoint -> array of {status, body} answered in order before normal behaviour.
     fail: {},
     frameMissing: 0, // answer this many frame requests with 404 no_frame first
@@ -223,6 +309,13 @@ async function api(req, res, url, body) {
   if (queue && queue.length) {
     const f = queue.shift();
     return send(res, f.status, f.body);
+  }
+
+  if (p.startsWith("/monitor/desktop/")) {
+    return m === "GET" ? desktopApi(res, p, url) : send(res, 405, { error: "method not allowed" });
+  }
+  if (!mock.serviceConfigured && p !== "/monitor/access") {
+    return err(res, 503, "service_not_configured", "monitor service is not configured");
   }
 
   const e = mock.engine;

@@ -51,6 +51,29 @@
     </section>
 
     <section class="panel">
+      <h2>The three controllers</h2>
+      <p>All three run on the same simulated intersection with the same traffic. Only the rule for changing the light is different.</p>
+      <div class="grid">
+        <div class="tile">
+          <h3>Fixed timer</h3>
+          <p>Runs on the clock and ignores the traffic. Each road gets 42 seconds of green, then 3 seconds of yellow, and the cycle repeats forever.</p>
+          <p>This is our baseline: how a basic traffic light behaves.</p>
+        </div>
+        <div class="tile">
+          <h3>Queue based</h3>
+          <p>Counts the stopped cars on each side. The light changes when the waiting road has at least 2 more stopped cars than the road with green.</p>
+          <p>Green lasts between 20 and 60 seconds. If there is a car waiting.</p>
+        </div>
+        <div class="tile">
+          <h3>Wait time</h3>
+          <p>Adds up how long the cars on each side have been waiting. The light changes when the other road's total waiting time is higher, so the road that has waited longest gets served.</p>
+          <p>Green lasts between 20 and 45 seconds. If there is a car waiting.</p>
+        </div>
+      </div>
+      <p class="note">Both adaptive controllers keep a minimum green time, so the light never flickers, and a maximum green time, so a waiting road is never left waiting forever.</p>
+    </section>
+
+    <section class="panel">
       <h2>Results so far</h2>
       <p>Average wait per vehicle in seconds. Simulated results in SUMO, one simulated hour per scenario.</p>
       <div class="table-wrap">

@@ -702,7 +702,11 @@ td.wrap {
     min-height: 2.9rem;
   }
 
-  .brand img {
-    height: 56px;
+  .brand-name {
+    font-size: 1.6rem;
+  }
+
+  .brand-tagline {
+    font-size: 0.7rem;
   }
 }

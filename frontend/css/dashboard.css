@@ -369,14 +369,22 @@ figcaption {
 }
 
 .brand {
-  padding: 0.3rem 0.7rem;
-  background: #fff;
-  border-radius: 8px;
-  line-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  margin: 0;
+  color: #fff;
+  text-decoration: none;
+  line-height: 1.1;
 }
 
-.brand img {
-  display: block;
-  height: 72px;
-  width: auto;
+.brand-name {
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.brand-tagline {
+  font-size: 0.8rem;
+  font-weight: 400;
 }

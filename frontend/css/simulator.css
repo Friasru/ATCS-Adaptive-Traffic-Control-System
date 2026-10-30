@@ -1,0 +1,125 @@
+[hidden] {
+  display: none !important;
+}
+
+h1 {
+  margin-top: 0;
+  font-size: 1.6rem;
+}
+
+.note {
+  margin: 0.75rem 0 0;
+  color: #52606d;
+  font-size: 0.92rem;
+}
+
+.controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 0.9rem;
+  align-items: end;
+}
+
+.field {
+  display: grid;
+  gap: 0.3rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.field select,
+.field input {
+  padding: 0.5rem 0.6rem;
+  border: 1px solid #b8c2cc;
+  border-radius: 6px;
+  background: #fff;
+  font: inherit;
+  font-weight: 400;
+}
+
+.buttons {
+  display: flex;
+  gap: 0.6rem;
+}
+
+button.button {
+  border: 1px solid transparent;
+  cursor: pointer;
+  font: inherit;
+}
+
+button.button.secondary {
+  border-color: #1c7ed6;
+}
+
+button.button:disabled {
+  background: #9aa5b1;
+  border-color: #9aa5b1;
+  color: #fff;
+  cursor: not-allowed;
+}
+
+.sim-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(240px, 1fr);
+  gap: 1.25rem;
+  align-items: start;
+}
+
+canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  border: 1px solid #c8d1da;
+}
+
+.side h2 {
+  margin: 0 0 0.4rem;
+  font-size: 1.2rem;
+}
+
+.side p {
+  margin: 0 0 0.9rem;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.4rem 1rem;
+  margin: 0 0 1rem;
+  padding: 0.8rem 1rem;
+  background: #e7f1fb;
+  border-radius: 8px;
+}
+
+.stats dt {
+  color: #3e4c59;
+}
+
+.stats dd {
+  margin: 0;
+  font-weight: 700;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#status {
+  min-height: 1.4rem;
+  font-weight: 600;
+}
+
+#status.error {
+  color: #c92a2a;
+}
+
+.legend {
+  color: #52606d;
+  font-size: 0.88rem;
+}
+
+@media (max-width: 800px) {
+  .sim-layout {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,39 @@
+main {
+  max-width: 1280px;
+}
+
+.clock {
+  margin: 0 0 0.4rem;
+  color: #3e4c59;
+}
+
+.verdict {
+  margin: 0 0 0.5rem;
+  padding: 0.7rem 1rem;
+  background: #ebfbee;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.panels {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+
+.side-panel {
+  display: grid;
+  gap: 0.9rem;
+  align-content: start;
+}
+
+.side-panel .stats {
+  margin: 0;
+}
+
+@media (max-width: 800px) {
+  .panels {
+    grid-template-columns: 1fr;
+  }
+}

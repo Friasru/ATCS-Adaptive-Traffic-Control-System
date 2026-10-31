@@ -1,0 +1,8 @@
+# Generated SUMO output of live runs and benchmarks
+output/
+
+# Test artefacts
+tests/artifacts/
+.cache/
+.pytest_cache/
+__pycache__/

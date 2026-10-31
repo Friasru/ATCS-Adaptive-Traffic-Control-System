@@ -22,6 +22,7 @@ The adaptive controller wins in uneven, balanced and held-out traffic. In satura
 - frontend/ - scenario configuration page and results dashboard
 - results/ - shared results data
 - monitor/ - ATCS Monitor camera detection and counting app, imported from its own repository with its own environment (see monitor/UPSTREAM.md)
+- simulation3d/ - service behind the 3D Simulator page: a real SUMO simulation with the ATCS controllers, drawn in 3D (see simulation3d/README.md)
 
 ## Wait-time controller
 
@@ -81,6 +82,14 @@ Then open http://127.0.0.1:5000/scenarios.html to create scenarios and run contr
 
 The SQLite database is `backend/atcs.db`; tables are created on startup, existing data is kept.
 
+## Running the 3D Simulator
+
+The **3D Simulator** tab shows a real SUMO simulation of the intersection in 3D, steered by the Fixed, Queue-Based and Wait-Time controllers of `simulation/`. Unlike the Simulator and Compare pages (a simplified model in the browser), it needs one more local program next to the web app, which the web app starts and stops by itself. Install its one extra package once (`aiohttp`, into the same virtual environment as the web app):
+
+    backend/venv/bin/pip install -r simulation3d/requirements.txt
+
+Then start ATCS as usual (above) and click **3D Simulator**, or open http://localhost:5000/simulator3d.html. The page asks the web app for the service, which starts it (a second or two; nothing is started before the tab is opened) and stops it when the web app exits. It listens on 127.0.0.1:8766 (the Monitor service uses 8765); if another program already has that port, a free one is used. If it cannot be started, the page says why and offers **Try again**. `ATCS3D_AUTOSTART=0` switches this off, and `simulation3d/run.sh` starts the service by hand, as before. The rest of the site does not depend on it. Demo Day steps, ports, troubleshooting and what was copied from the standalone 3dATCS project: [simulation3d/README.md](simulation3d/README.md).
+
 ## API
 
 Public (no token):
@@ -118,10 +127,13 @@ The Monitor page (Phase 5c) is desktop-first: **Open Desktop Monitor** opens the
     cd simulation && ../backend/venv/bin/python -m pytest tests
     cd monitor && .venv/bin/python -m pytest
     cd frontend/tests && npm install && npm test
+    simulation3d/run.sh test -m "not slow"
 
 The backend tests use an in-memory database and a test-only JWT secret, need no environment variables and never start SUMO.
 
 The frontend tests drive the Scenarios, Dashboard and Monitor pages in headless Chromium (Playwright) against a local mock of the API; the desktop payloads they use are real backend output, checked by `backend/tests/test_desktop_dashboard_contract.py`.
+
+The 3D Simulator tests use real SUMO and a real browser (see simulation3d/README.md); the tab and page checks are in `backend/tests/test_simulator3d.py` and need no SUMO.
 
 The simulation tests include a few real SUMO runs that check the adaptive controller against the fixed timer, and skip themselves if SUMO is not installed.
 

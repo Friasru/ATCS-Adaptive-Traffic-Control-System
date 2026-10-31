@@ -1,0 +1,54 @@
+{
+  "kind": "benchmark",
+  "description": "Full simulated hour per controller, headless SUMO, unmodified ATCS controllers.",
+  "scenario": {
+    "key": "uneven",
+    "title": "Uneven traffic",
+    "description": "East-west heavy, north-south light",
+    "ew": 500,
+    "ns": 200
+  },
+  "seed": 23423,
+  "step_length_s": 1.0,
+  "sim_end_s": 3600,
+  "sumo": "Eclipse SUMO sumo Version 1.18.0",
+  "atcs_source_commit": "83f909d00ffc22d6089849d23f3a96479f8fbeab",
+  "generated_at": "2026-10-28T20:24:41+00:00",
+  "controllers": {
+    "fixed": {
+      "vehicles_completed": 1400,
+      "avg_wait_s": 13.388571428571428,
+      "max_wait_s": 46.0,
+      "avg_time_loss_s": 23.35417857142857,
+      "avg_trip_duration_s": 52.45428571428572
+    },
+    "queue_based": {
+      "vehicles_completed": 1400,
+      "avg_wait_s": 6.065,
+      "max_wait_s": 25.0,
+      "avg_time_loss_s": 15.11032142857143,
+      "avg_trip_duration_s": 44.215714285714284
+    },
+    "wait_time": {
+      "vehicles_completed": 1400,
+      "avg_wait_s": 6.176428571428572,
+      "max_wait_s": 25.0,
+      "avg_time_loss_s": 15.346607142857144,
+      "avg_trip_duration_s": 44.44428571428571
+    }
+  },
+  "improvement_vs_fixed_pct": {
+    "queue_based": {
+      "avg_wait_s": 54.7,
+      "max_wait_s": 45.7,
+      "avg_time_loss_s": 35.3,
+      "avg_trip_duration_s": 15.7
+    },
+    "wait_time": {
+      "avg_wait_s": 53.9,
+      "max_wait_s": 45.7,
+      "avg_time_loss_s": 34.3,
+      "avg_trip_duration_s": 15.3
+    }
+  }
+}

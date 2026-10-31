@@ -1,0 +1,3 @@
+-r requirements.txt
+pytest>=8
+playwright>=1.48   # drives a cached Chromium for the browser tests only

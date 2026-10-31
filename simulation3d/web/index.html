@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>3dATCS · Adaptive Traffic Control in 3D</title>
+  <link rel="stylesheet" href="css/app.css">
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "./vendor/three/three.module.min.js",
+      "three/addons/": "./vendor/three/addons/"
+    }
+  }
+  </script>
+</head>
+<body>
+  <canvas id="gl"></canvas>
+
+  <main id="views" class="single">
+    <section class="pane" id="pane0">
+      <div class="labels"></div>
+      <div class="pane-hud">
+        <div class="pane-title"><span class="chip"></span><span class="title">–</span></div>
+        <div class="signal-board"></div>
+        <div class="metrics"></div>
+      </div>
+    </section>
+    <section class="pane" id="pane1" hidden>
+      <div class="labels"></div>
+      <div class="pane-hud">
+        <div class="pane-title"><span class="chip"></span><span class="title">–</span></div>
+        <div class="signal-board"></div>
+        <div class="metrics"></div>
+      </div>
+    </section>
+  </main>
+
+  <header id="topbar" class="panel">
+    <div class="brand"><b>3dATCS</b><span>Adaptive Traffic Control System · live SUMO simulation</span></div>
+    <div class="scenario-info" id="scenario-info">–</div>
+    <div class="clock"><span class="label">Simulation time</span><span id="clock">0:00</span><span id="clock-sub"></span></div>
+    <div class="status"><span id="status-pill" class="pill idle">Idle</span><span id="conn" class="conn off" title="Connection to the simulation server"></span></div>
+    <button id="btn-results" class="ghost" title="Show measured results (P)">Results</button>
+    <button id="btn-help" class="ghost" title="Keyboard shortcuts (?)" aria-label="Keyboard shortcuts">?</button>
+  </header>
+
+  <aside id="results" class="panel" hidden>
+    <div class="results-head">
+      <h2>Measured results</h2>
+      <button id="btn-results-close" class="ghost small" aria-label="Close">✕</button>
+    </div>
+    <div id="results-body"></div>
+    <div class="results-actions">
+      <button id="btn-bench" class="secondary">Re-run benchmark (≈10 s)</button>
+      <span id="bench-note" class="muted"></span>
+    </div>
+  </aside>
+
+  <footer id="controls" class="panel">
+    <div class="group">
+      <label>Controller
+        <select id="sel-ctrl"></select>
+      </label>
+      <label id="lbl-ctrl2" hidden>vs.
+        <select id="sel-ctrl2"></select>
+      </label>
+      <button id="btn-mode" class="toggle" title="Side-by-side comparison (B)">Side-by-side</button>
+    </div>
+    <div class="group">
+      <label>Scenario
+        <select id="sel-scenario"></select>
+      </label>
+    </div>
+    <div class="group run">
+      <button id="btn-start" class="primary" title="Start (Space)">▶ Start</button>
+      <button id="btn-pause" title="Pause / Resume (Space)">⏸ Pause</button>
+      <button id="btn-restart" title="Restart the same experiment (R)">↻ Restart</button>
+      <button id="btn-stop" title="Stop (X)">■ Stop</button>
+    </div>
+    <div class="group">
+      <span class="muted">Speed</span>
+      <div class="seg" id="speeds"></div>
+    </div>
+    <div class="group">
+      <span class="muted">Camera</span>
+      <div class="seg" id="cams">
+        <button data-cam="overview" title="Overview (O)">Overview</button>
+        <button data-cam="top" title="Top-down (T)">Top</button>
+        <button data-cam="driver" title="Driver view (D)">Driver</button>
+      </div>
+    </div>
+    <div class="group tail"><span id="fps" class="muted" title="Rendering frames per second">– fps</span></div>
+  </footer>
+
+  <div id="help" class="panel" hidden>
+    <h2>Keyboard shortcuts</h2>
+    <dl>
+      <dt>Space</dt><dd>Start / pause / resume</dd>
+      <dt>R</dt><dd>Restart the same experiment</dd>
+      <dt>X</dt><dd>Stop</dd>
+      <dt>1 · 2 · 3</dt><dd>Fixed · Queue-Based · Wait-Time (starts a fresh run if one is active)</dd>
+      <dt>B</dt><dd>Side-by-side: Fixed vs ATCS</dd>
+      <dt>P</dt><dd>Measured results</dd>
+      <dt>O · T · D</dt><dd>Camera: overview · top-down · driver</dd>
+      <dt>H</dt><dd>Hide / show the interface (clean projector view)</dd>
+      <dt>F</dt><dd>Full screen</dd>
+      <dt>Mouse</dt><dd>Drag = orbit · right-drag = pan · wheel = zoom</dd>
+    </dl>
+  </div>
+  <div id="toast" hidden></div>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

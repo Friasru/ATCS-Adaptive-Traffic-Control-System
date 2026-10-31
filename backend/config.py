@@ -21,6 +21,12 @@ class Config:
     MONITOR_SERVICE_PORT = os.environ.get("ATCS_MONITOR_PORT", "8765")
     MONITOR_SERVICE_SECRET = os.environ.get("ATCS_MONITOR_SERVICE_SECRET")
     MONITOR_SERVICE_TIMEOUT_S = 5.0
+    # 3D Simulator service (simulation3d/, 127.0.0.1 only). The web app starts it when the 3D Simulator page asks for
+    # it and stops it when the app exits; ATCS3D_AUTOSTART=0 turns that off (run simulation3d/run.sh yourself then).
+    # ATCS3D_PORT is the port it prefers; if another program has it, a free one is used and the page is told.
+    SIMULATOR3D_DIR = os.path.abspath(os.path.join(basedir, "..", "simulation3d"))
+    SIMULATOR3D_PORT = os.environ.get("ATCS3D_PORT", "8766")
+    SIMULATOR3D_AUTOSTART = os.environ.get("ATCS3D_AUTOSTART", "1") != "0"
     # Desktop telemetry (/api/desktop/telemetry/*, monitor/docs/desktop_telemetry.md).
     # Devices are registered with monitor_access.py; requests are accepted from
     # loopback addresses only.

@@ -69,6 +69,10 @@ def create_app(config_class=Config):
 
     app.register_blueprint(api_bp, url_prefix="/api")
 
+    from app.services import simulator3d
+
+    simulator3d.init_app(app)
+
     with app.app_context():
         from app import models  # noqa: F401
         from app.services.seed import seed_scenarios
